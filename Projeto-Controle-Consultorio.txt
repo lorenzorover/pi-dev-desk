@@ -1,0 +1,38 @@
+poder realizar um cadastro de paciente NOVO;
+poder marcar consultas novas para pacientes JÁ CADASTRADOS;
+ter opção de criar um produto para o estoque do ZERO ou então pegar informações básicas (nome, categoria
+e descricao);
+ter opção de criar um estoque ou criar um produto sem um estoque (apenas para organização);
+caso a pessoa selecione a opçao de adicionar ao estoque com um produto já existente, puxar informações
+básicas (como dito anteriormente) e adicionar apenas a quantidade, valor pago (que também sera adicionado
+ao sistema);
+criar uma data da compra, que no programa estará automática para o dia atual que a pessoa está
+adicionando, ou então ela poderá adicionar manualmente se preferir. Isso só servirá para calcular o gasto
+no mês, por isso do preco dos produtos existirem;
+Colocar um sistema de validade nos produtos, que serão descartados do estoque após passar da data 
+estipulada;
+Fazer um comando para deletar COMPRAS que possuem 0 de quantidade;
+
+Quando a pessoa for deletar o produto, não deletar "realmente" o produto. O produto continuará lá no
+historico do banco de dados. Para a pessoa realmente deletar o produto, ela deverá excluir todas as
+consultas com aquele produto, e o boolean "deletado" que tem no produto deve ser true, que pode ser
+ativado se o usuário remover da lista.
+
+O produto tem uma quantidade para assim o produto calcular todas as compras feitas e somar todas as
+quantidades;
+
+FUTURAMENTE FAZER UM SISTEMA PARA PEGAR O VALOR GASTO PRECISAMENTE (EM MATERIAIS GASTOS).
+Isso consiste em pegar uma quantia adicionada e o seu valor, dividir o valor total pela quantia, pegando
+o valor unitário. O usuário descontará a quantia do produto para cada consulta, com isso fazer um FOR que
+vai rodar a quantia adicionada, junto de seu respectivo valor, e toda vez que o usuário acessar as
+informações, ele poderá colocar como exemplo ultimos 30 dias ou 90 dias de gastos, e assim o programa
+calculará.
+Para isso, o sistema terá que ter uma opcao de rodar todos os tratamentos realizados durante este periodo,
+os materiais gastos, junto de seus valores. Caso o material passe do prazo de validade, ele será descartado.
+O programa irá pegar a tabela CONSULTA baseado na data. Já no produto ele deverá pegar a COMPRA que
+tem a data mais distante da atual, pegar o seu valor e adicionar.
+Isso tudo pela tabela consulta, já que a consulta servirá para consultar históricos antigos também, alem
+de cadastrar novas consultas.
+
+Também pode ser realizado o valor entrado dos tratamentos da mesma forma, sendo bem mais facil de ser
+realizado na codificação.
