@@ -8,30 +8,30 @@ public class Consulta {
 	private String descricao;
 	private int comparecimento;
 	private Paciente paciente;
-	private Tratamento tratamentos;
-	private Produto produtos;
+	private Tratamento tratamento;
+	private Produto produto;
 
 	public Consulta(int id, Timestamp dataHora, String descricao, int comparecimento, Paciente paciente,
-			Tratamento tratamentos, Produto produtos) {
+			Tratamento tratamento, Produto produto) {
 		super();
 		this.id = id;
 		this.dataHora = dataHora;
 		this.descricao = descricao;
 		this.comparecimento = comparecimento;
 		this.paciente = paciente;
-		this.tratamentos = tratamentos;
-		this.produtos = produtos;
+		this.tratamento = tratamento;
+		this.produto = produto;
 	}
 
-	public Consulta(Timestamp dataHora, String descricao, int comparecimento, Paciente paciente, Tratamento tratamentos,
-			Produto produtos) {
+	public Consulta(Timestamp dataHora, String descricao, int comparecimento, Paciente paciente, Tratamento tratamento,
+			Produto produto) {
 		super();
 		this.dataHora = dataHora;
 		this.descricao = descricao;
 		this.comparecimento = comparecimento;
 		this.paciente = paciente;
-		this.tratamentos = tratamentos;
-		this.produtos = produtos;
+		this.tratamento = tratamento;
+		this.produto = produto;
 	}
 
 	public Timestamp getDataHora() {
@@ -50,6 +50,14 @@ public class Consulta {
 		this.descricao = descricao;
 	}
 
+	public int getComparecimento() {
+		return comparecimento;
+	}
+
+	public void setComparecimento(int comparecimento) {
+		this.comparecimento = comparecimento;
+	}
+
 	public boolean isComparecimentoAsBoolean() {
 		return comparecimento != 0;
 	}
@@ -66,20 +74,20 @@ public class Consulta {
 		this.paciente = paciente;
 	}
 
-	public Tratamento getTratamentos() {
-		return tratamentos;
+	public Tratamento getTratamento() {
+		return tratamento;
 	}
 
-	public void setTratamentos(Tratamento tratamentos) {
-		this.tratamentos = tratamentos;
+	public void setTratamento(Tratamento tratamento) {
+		this.tratamento = tratamento;
 	}
 
-	public Produto getProdutos() {
-		return produtos;
+	public Produto getProduto() {
+		return produto;
 	}
 
-	public void setProdutos(Produto produtos) {
-		this.produtos = produtos;
+	public void setProduto(Produto produto) {
+		this.produto = produto;
 	}
 
 	public int getId() {
@@ -89,7 +97,7 @@ public class Consulta {
 	@Override
 	public String toString() {
 		return "Consulta [id=" + id + ", dataHora=" + dataHora + ", descricao=" + descricao + ", comparecimento="
-				+ comparecimento + ", paciente=" + paciente + ", tratamentos=" + tratamentos + ", produtos=" + produtos
+				+ comparecimento + ", paciente=" + paciente + ", tratamento=" + tratamento + ", produto=" + produto
 				+ "]";
 	}
 

@@ -9,11 +9,10 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import entidades.Compra;
-import entidades.Produto;
+import entidades.Endereco;
+import entidades.Responsavel;
 
-public class ProdutoDao {
-
+public class ResponsavelDao {
 	public Connection getConexao() throws ClassNotFoundException {
 
 		String driver = "com.mysql.cj.jdbc.Driver";
@@ -32,20 +31,20 @@ public class ProdutoDao {
 		return conn;
 	}
 
-	public int cadastrarProduto(Produto produto) {
+	public int cadastrarResponsavel(Responsavel responsavel) {
 
-		String insert = "INSERT INTO produto(nome,categoria,descricao,compra_id,deletado) VALUES (?,?,?,?,?)";
+		String insert = "INSERT INTO responsavel(nome,cpf,telefone,email,endereco_id) VALUES(?,?,?,?,?)";
 
 		try {
 			Connection conn = getConexao();
 
 			PreparedStatement pst = conn.prepareStatement(insert, Statement.RETURN_GENERATED_KEYS);
 
-			pst.setString(1, produto.getNome());
-			pst.setString(2, produto.getCategoria());
-			pst.setString(3, produto.getDescricao());
-			pst.setInt(4, produto.getCompra().getId());
-			pst.setInt(5, produto.getDeletado());
+			pst.setString(1, responsavel.getNome());
+			pst.setInt(2, responsavel.getCpf());
+			pst.setInt(3, responsavel.getTelefone());
+			pst.setString(4, responsavel.getEmail());
+			pst.setInt(5, responsavel.getEndereco().getId());
 
 			pst.executeUpdate();
 
@@ -68,9 +67,9 @@ public class ProdutoDao {
 
 	}
 
-	public List<Produto> listaDeProdutos() {
-		List<Produto> produtos = new ArrayList<>();
-		String sql = "SELECT * FROM produto";
+	public List<Responsavel> listaDeResponsaveis() {
+		List<Responsavel> responsaveis = new ArrayList<>();
+		String sql = "SELECT * FROM responsavel";
 
 		try {
 			Connection conn = getConexao();
@@ -79,13 +78,13 @@ public class ProdutoDao {
 			while (rs.next()) {
 				int id = rs.getInt(1);
 				String nome = rs.getString(2);
-				String categoria = rs.getString(3);
-				String descricao = rs.getString(4);
-				Compra compra = (Compra) rs.getObject(5); // Achar um jeito de adicionar esse objeto
-				int deletado = rs.getInt(6);
+				int cpf = rs.getInt(3);
+				int telefone = rs.getInt(4);
+				String email = rs.getString(5);
+				Endereco endereco = (Endereco) rs.getObject(5); // Achar um jeito de adicionar esse objeto
 
-				Produto produto = new Produto(id, nome, categoria, descricao, compra, deletado);
-				produtos.add(produto);
+				Responsavel responsavel = new Responsavel(id, nome, cpf, telefone, email, endereco);
+				responsaveis.add(responsavel);
 
 			}
 			rs.close();
@@ -94,22 +93,22 @@ public class ProdutoDao {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return produtos;
+		return responsaveis;
 	}
 
-	public void alterarProduto(Produto produto) {
+	public void alterarResponsavel(Responsavel responsavel) {
 
-		String sql = "UPDATE produto SET nome = ?, categoria = ?, descricao = ?, compra_id = ?, deletado = ? WHERE id = ?";
+		String sql = "UPDATE responsavel SET nome = ?, cpf = ?, telefone = ?, email = ?, endereco_id = ? WHERE id = ?";
 
 		try {
 			Connection conn = getConexao();
 			PreparedStatement pst = conn.prepareStatement(sql);
 
-			pst.setString(1, produto.getNome());
-			pst.setString(2, produto.getCategoria());
-			pst.setString(3, produto.getDescricao());
-			pst.setInt(4, produto.getCompra().getId());
-			pst.setInt(5, produto.getDeletado());
+			pst.setString(1, responsavel.getNome());
+			pst.setInt(2, responsavel.getCpf());
+			pst.setInt(3, responsavel.getTelefone());
+			pst.setString(4, responsavel.getEmail());
+			pst.setInt(5, responsavel.getEndereco().getId());
 
 			pst.executeUpdate();
 
@@ -122,9 +121,9 @@ public class ProdutoDao {
 
 	}
 
-	public void deletarProduto(int id) {
+	public void deletarResponsavel(int id) {
 
-		String sql = "DELETE produto, compra FROM produto INNER JOIN compra ON produto.compra_id = compra.id WHERE produto.id = ?";
+		String sql = "DELETE responsavel, endereco FROM responsavel INNER JOIN endereco ON responsavel.endereco_id = endereco.id WHERE responsavel.id = ?";
 		try {
 			Connection conn = getConexao();
 			PreparedStatement pst = conn.prepareStatement(sql);
@@ -140,4 +139,5 @@ public class ProdutoDao {
 		}
 
 	}
+
 }

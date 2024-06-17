@@ -41,7 +41,6 @@ public class TratamentoDao {
 			pst.setDouble(2, tratamento.getPreco());
 			pst.setString(3, tratamento.getDescricao());
 			pst.setInt(4, tratamento.getDeletado());
-			;
 
 			pst.executeUpdate();
 
@@ -94,7 +93,6 @@ public class TratamentoDao {
 			pst.setDouble(2, tratamento.getPreco());
 			pst.setString(3, tratamento.getDescricao());
 			pst.setInt(4, tratamento.getDeletado());
-			;
 
 			pst.executeUpdate();
 

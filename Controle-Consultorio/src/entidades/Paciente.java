@@ -6,20 +6,20 @@ public class Paciente {
 	private int id;
 	private String nome;
 	private int cpf;
-	private Date data_nasc;
+	private Date dataNasc;
 	private int telefone;
 	private String email;
 	private Endereco endereco;
 	private Responsavel responsavel;
 	private int deletado;
 
-	public Paciente(int id, String nome, int cpf, Date data_nasc, int telefone, String email, Endereco endereco,
+	public Paciente(int id, String nome, int cpf, Date dataNasc, int telefone, String email, Endereco endereco,
 			Responsavel responsavel, int deletado) {
 		super();
 		this.id = id;
 		this.nome = nome;
 		this.cpf = cpf;
-		this.data_nasc = data_nasc;
+		this.dataNasc = dataNasc;
 		this.telefone = telefone;
 		this.email = email;
 		this.endereco = endereco;
@@ -27,12 +27,12 @@ public class Paciente {
 		this.deletado = deletado;
 	}
 
-	public Paciente(String nome, int cpf, Date data_nasc, int telefone, String email, Endereco endereco,
+	public Paciente(String nome, int cpf, Date dataNasc, int telefone, String email, Endereco endereco,
 			Responsavel responsavel, int deletado) {
 		super();
 		this.nome = nome;
 		this.cpf = cpf;
-		this.data_nasc = data_nasc;
+		this.dataNasc = dataNasc;
 		this.telefone = telefone;
 		this.email = email;
 		this.endereco = endereco;
@@ -56,12 +56,12 @@ public class Paciente {
 		this.cpf = cpf;
 	}
 
-	public Date getData_nasc() {
-		return data_nasc;
+	public Date getDataNasc() {
+		return dataNasc;
 	}
 
-	public void setData_nasc(Date data_nasc) {
-		this.data_nasc = data_nasc;
+	public void setDataNasc(Date dataNasc) {
+		this.dataNasc = dataNasc;
 	}
 
 	public int getTelefone() {
@@ -118,7 +118,7 @@ public class Paciente {
 
 	@Override
 	public String toString() {
-		return "Paciente [id=" + id + ", nome=" + nome + ", cpf=" + cpf + ", data_nasc=" + data_nasc + ", telefone="
+		return "Paciente [id=" + id + ", nome=" + nome + ", cpf=" + cpf + ", dataNasc=" + dataNasc + ", telefone="
 				+ telefone + ", email=" + email + ", endereco=" + endereco + ", responsavel=" + responsavel
 				+ ", deletado=" + deletado + "]";
 	}
