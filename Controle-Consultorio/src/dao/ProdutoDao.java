@@ -124,7 +124,9 @@ public class ProdutoDao {
 
 	public void deletarProduto(int id) {
 
-		String sql = "DELETE produto, compra FROM produto INNER JOIN compra ON produto.compra_id = compra.id WHERE produto.id = ?";
+		//String sql = "DELETE produto, compra FROM produto INNER JOIN compra ON produto.compra_id = compra.id WHERE produto.id = ?";
+		
+		String sql = "DELETE FROM produto WHERE id = ?";
 		try {
 			Connection conn = getConexao();
 			PreparedStatement pst = conn.prepareStatement(sql);

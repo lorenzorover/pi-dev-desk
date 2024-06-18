@@ -123,7 +123,9 @@ public class ResponsavelDao {
 
 	public void deletarResponsavel(int id) {
 
-		String sql = "DELETE responsavel, endereco FROM responsavel INNER JOIN endereco ON responsavel.endereco_id = endereco.id WHERE responsavel.id = ?";
+		//String sql = "DELETE responsavel, endereco FROM responsavel INNER JOIN endereco ON responsavel.endereco_id = endereco.id WHERE responsavel.id = ?";
+		
+		String sql = "DELETE FROM responsavel WHERE id = ?";
 		try {
 			Connection conn = getConexao();
 			PreparedStatement pst = conn.prepareStatement(sql);

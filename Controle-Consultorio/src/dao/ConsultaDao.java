@@ -1,6 +1,7 @@
 package dao;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,7 +13,6 @@ import java.util.List;
 
 import entidades.Consulta;
 import entidades.Paciente;
-import entidades.Produto;
 import entidades.Tratamento;
 
 public class ConsultaDao {
@@ -42,14 +42,14 @@ public class ConsultaDao {
 			Connection conn = getConexao();
 
 			PreparedStatement pst = conn.prepareStatement(insert, Statement.RETURN_GENERATED_KEYS);
-			
+
 			pst.setTimestamp(1, consulta.getDataHora());
 			pst.setString(2, consulta.getDescricao());
 			pst.setInt(3, consulta.getComparecimento());
 			pst.setInt(4, consulta.getPaciente().getId());
 			pst.setInt(5, consulta.getTratamento().getId());
 			pst.setInt(6, consulta.getProduto().getId());
-			
+
 			pst.executeUpdate();
 
 			ResultSet rs = pst.getGeneratedKeys();
@@ -72,33 +72,52 @@ public class ConsultaDao {
 	}
 
 	public List<Consulta> listaDeConsultas() {
-		List<Consulta> consultas = new ArrayList<>();
-		String sql = "SELECT * FROM consulta";
+		
+		String sql = " SELECT * FROM consulta INNER JOIN paciente ON consulta.paciente_id = paciente.id "
+				+ "INNER JOIN tratamento ON consulta.tratamento_id = tratamento.id";
+		
+		List<Consulta> lista = new ArrayList<>();
 
 		try {
 			Connection conn = getConexao();
 			PreparedStatement pst = conn.prepareStatement(sql);
 			ResultSet rs = pst.executeQuery();
-			while (rs.next()) {
+			PacienteDao pacienteDao = new PacienteDao();
+			TratamentoDao tratamentoDao = new TratamentoDao();
+
+			while (rs.next() == true) {
 				int id = rs.getInt(1);
 				Timestamp dataHora = rs.getTimestamp(2);
 				String descricao = rs.getString(3);
 				int comparecimento = rs.getInt(4);
-				Paciente paciente = (Paciente) rs.getObject(5); // Achar um jeito de adicionar esse objeto
-				Tratamento tratamento = (Tratamento) rs.getObject(6); // Achar um jeito de adicionar esse objeto
-				Produto produto = (Produto) rs.getObject(7); // Achar um jeito de adicionar esse objeto
+				int pacienteId = rs.getInt(5);
+				String nomePaciente = rs.getString(8);
+				int cpf = rs.getInt(9);
+				Date dataNasc = rs.getDate(10);
+				int telefone = rs.getInt(11);
+				String email = rs.getString(12);
+				int enderecoId = rs.getInt(13);
+				int responsavelId = rs.getInt(14);
+				int deletadoPaciente = rs.getInt(15);
+				Paciente paciente = new Paciente(pacienteId, nomePaciente, cpf, dataNasc, telefone, email, null, null, deletadoPaciente);
 
-				Consulta consulta = new Consulta(id, dataHora, descricao, comparecimento, paciente, tratamento, produto);
-				consultas.add(consulta);
+				int tratamentoId = rs.getInt(6);
+				String nome = rs.getString(17);
+				double preco = rs.getDouble(18);
+				String descricaoTratamento = rs.getString(19);
+				int deletadoTratamento = rs.getInt(20);
+				Tratamento tratamento = new Tratamento(tratamentoId, nome, preco, descricaoTratamento, deletadoTratamento);
+				
+				Consulta consulta = new Consulta(id, dataHora, descricao, comparecimento, paciente, tratamento, null);
+				lista.add(consulta);
 
 			}
-			rs.close();
-			pst.close();
-			conn.close();
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return consultas;
+
+		return lista;
 	}
 
 	public void alterarConsulta(Consulta consulta) {
@@ -114,7 +133,7 @@ public class ConsultaDao {
 			pst.setInt(3, consulta.getComparecimento());
 			pst.setInt(4, consulta.getPaciente().getId());
 			pst.setInt(5, consulta.getTratamento().getId());
-			pst.setInt(6, consulta.getProduto().getId());
+			// pst.setInt(6, consulta.getProduto().getId());
 
 			pst.executeUpdate();
 
@@ -145,5 +164,5 @@ public class ConsultaDao {
 		}
 
 	}
-	
+
 }

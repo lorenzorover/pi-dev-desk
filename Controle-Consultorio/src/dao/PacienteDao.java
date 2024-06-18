@@ -134,7 +134,9 @@ public class PacienteDao {
 	
 	public void deletarPaciente(int id) {
 
-		String sql = "DELETE paciente, endereco FROM paciente INNER JOIN endereco ON paciente.endereco_id = endereco.id WHERE paciente.id = ?";
+		//String sql = "DELETE paciente, endereco FROM paciente INNER JOIN endereco ON paciente.endereco_id = endereco.id WHERE paciente.id = ?";
+		
+		String sql = "DELETE FROM paciente WHERE id = ?";
 		try {
 			Connection conn = getConexao();
 			PreparedStatement pst = conn.prepareStatement(sql);
@@ -151,7 +153,7 @@ public class PacienteDao {
 
 	}
 
-	public void deletarPacienteCResponsavel(int id) {
+	/*public void deletarPacienteCResponsavel(int id) {
 
 		String sql = "DELETE paciente, responsavel, endereco FROM paciente INNER JOIN responsavel ON paciente.responsavel_id = responsavel.id "
 				+ "INNER JOIN endereco ON responsavel.endereco_id = endereco.id WHERE paciente.id = ?";
@@ -169,6 +171,6 @@ public class PacienteDao {
 			e.printStackTrace();
 		}
 
-	}
+	}*/
 
 }
