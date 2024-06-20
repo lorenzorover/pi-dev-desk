@@ -90,6 +90,7 @@ public class ConsultaDao {
 				Timestamp dataHora = rs.getTimestamp(2);
 				String descricao = rs.getString(3);
 				int comparecimento = rs.getInt(4);
+				
 				int pacienteId = rs.getInt(5);
 				String nomePaciente = rs.getString(8);
 				int cpf = rs.getInt(9);
@@ -112,6 +113,10 @@ public class ConsultaDao {
 				lista.add(consulta);
 
 			}
+			
+			rs.close();
+			pst.close();
+			conn.close();
 
 		} catch (Exception e) {
 			e.printStackTrace();

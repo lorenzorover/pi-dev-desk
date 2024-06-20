@@ -6,25 +6,22 @@ public class Responsavel {
 	private int cpf;
 	private int telefone;
 	private String email;
-	private Endereco endereco;
 
-	public Responsavel(int id, String nome, int cpf, int telefone, String email, Endereco endereco) {
+	public Responsavel(int id, String nome, int cpf, int telefone, String email) {
 		super();
 		this.id = id;
 		this.nome = nome;
 		this.cpf = cpf;
 		this.telefone = telefone;
 		this.email = email;
-		this.endereco = endereco;
 	}
 
-	public Responsavel(String nome, int cpf, int telefone, String email, Endereco endereco) {
+	public Responsavel(String nome, int cpf, int telefone, String email) {
 		super();
 		this.nome = nome;
 		this.cpf = cpf;
 		this.telefone = telefone;
 		this.email = email;
-		this.endereco = endereco;
 	}
 
 	public String getNome() {
@@ -59,14 +56,6 @@ public class Responsavel {
 		this.email = email;
 	}
 
-	public Endereco getEndereco() {
-		return endereco;
-	}
-
-	public void setEndereco(Endereco endereco) {
-		this.endereco = endereco;
-	}
-
 	public int getId() {
 		return id;
 	}
@@ -74,7 +63,7 @@ public class Responsavel {
 	@Override
 	public String toString() {
 		return "Responsavel [id=" + id + ", nome=" + nome + ", cpf=" + cpf + ", telefone=" + telefone + ", email="
-				+ email + ", endereco=" + endereco + "]";
+				+ email + "]";
 	}
 
 }

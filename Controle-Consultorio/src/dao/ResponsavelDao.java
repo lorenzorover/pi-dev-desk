@@ -33,7 +33,7 @@ public class ResponsavelDao {
 
 	public int cadastrarResponsavel(Responsavel responsavel) {
 
-		String insert = "INSERT INTO responsavel(nome,cpf,telefone,email,endereco_id) VALUES(?,?,?,?,?)";
+		String insert = "INSERT INTO responsavel(nome,cpf,telefone,email) VALUES(?,?,?,?)";
 
 		try {
 			Connection conn = getConexao();
@@ -44,7 +44,6 @@ public class ResponsavelDao {
 			pst.setInt(2, responsavel.getCpf());
 			pst.setInt(3, responsavel.getTelefone());
 			pst.setString(4, responsavel.getEmail());
-			pst.setInt(5, responsavel.getEndereco().getId());
 
 			pst.executeUpdate();
 
@@ -81,9 +80,8 @@ public class ResponsavelDao {
 				int cpf = rs.getInt(3);
 				int telefone = rs.getInt(4);
 				String email = rs.getString(5);
-				Endereco endereco = (Endereco) rs.getObject(5); // Achar um jeito de adicionar esse objeto
 
-				Responsavel responsavel = new Responsavel(id, nome, cpf, telefone, email, endereco);
+				Responsavel responsavel = new Responsavel(id, nome, cpf, telefone, email);
 				responsaveis.add(responsavel);
 
 			}
@@ -108,7 +106,6 @@ public class ResponsavelDao {
 			pst.setInt(2, responsavel.getCpf());
 			pst.setInt(3, responsavel.getTelefone());
 			pst.setString(4, responsavel.getEmail());
-			pst.setInt(5, responsavel.getEndereco().getId());
 
 			pst.executeUpdate();
 
@@ -122,8 +119,6 @@ public class ResponsavelDao {
 	}
 
 	public void deletarResponsavel(int id) {
-
-		//String sql = "DELETE responsavel, endereco FROM responsavel INNER JOIN endereco ON responsavel.endereco_id = endereco.id WHERE responsavel.id = ?";
 		
 		String sql = "DELETE FROM responsavel WHERE id = ?";
 		try {
