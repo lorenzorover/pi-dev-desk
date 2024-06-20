@@ -136,6 +136,8 @@ public class Principal {
 				
 			} else if (tratamento.isSelected()){
 				
+			} else {
+				//Fazer um dialog de erro aqui caso não selecione nenhum
 			}
 		}
 	}

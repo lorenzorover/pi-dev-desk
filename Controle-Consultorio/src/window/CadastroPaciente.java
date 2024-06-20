@@ -1,19 +1,29 @@
 package window;
 
-import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
+import java.awt.Checkbox;
 import java.awt.Color;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
-import javax.swing.JMenuBar;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
+import java.awt.EventQueue;
 import java.awt.Font;
-import javax.swing.JCheckBox;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
+import javax.swing.text.MaskFormatter;
+
+import dao.PacienteDao;
+import entidades.Paciente;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import javax.swing.JFormattedTextField;
 
 public class CadastroPaciente extends JFrame {
 
@@ -28,7 +38,6 @@ public class CadastroPaciente extends JFrame {
 	private JTextField tfCidade;
 	private JTextField tfNumero;
 	private JTextField tfNomePaciente;
-	private JTextField tfCpfPaciente;
 	private JTextField tfDataNasc;
 	private JTextField tfTelefonePaciente;
 	private JTextField tfEmailPaciente;
@@ -36,6 +45,8 @@ public class CadastroPaciente extends JFrame {
 	private JTextField tfCpfResponsavel;
 	private JTextField tfTelefoneResponsavel;
 	private JTextField tfEmailResponsavel;
+	
+	private PacienteDao pacienteDao = new PacienteDao();
 
 	/**
 	 * Launch the application.
@@ -174,6 +185,11 @@ public class CadastroPaciente extends JFrame {
 		pEndereco.add(lblNewLabel_18);
 		
 		JButton btnSalvar = new JButton("Salvar");
+		btnSalvar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				cadastrarPaciente();
+			}
+		});
 		btnSalvar.setBounds(287, 258, 89, 23);
 		pEndereco.add(btnSalvar);
 		
@@ -209,11 +225,6 @@ public class CadastroPaciente extends JFrame {
 		lblNewLabel_5.setBounds(11, 125, 63, 30);
 		pPaciente.add(lblNewLabel_5);
 		
-		tfCpfPaciente = new JTextField();
-		tfCpfPaciente.setColumns(10);
-		tfCpfPaciente.setBounds(98, 97, 128, 20);
-		pPaciente.add(tfCpfPaciente);
-		
 		tfDataNasc = new JTextField();
 		tfDataNasc.setColumns(10);
 		tfDataNasc.setBounds(98, 128, 86, 20);
@@ -246,8 +257,25 @@ public class CadastroPaciente extends JFrame {
 		pPaciente.add(chckbxResponsavel);
 		
 		JButton btnContinuarPaciente = new JButton("Continuar");
+		btnContinuarPaciente.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
 		btnContinuarPaciente.setBounds(287, 258, 89, 23);
 		pPaciente.add(btnContinuarPaciente);
+		
+		MaskFormatter mascaraCpf;
+		
+		try {
+            mascaraCpf = new MaskFormatter("###.###.###-##");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+		
+		JFormattedTextField ftfCpfPaciente = new JFormattedTextField(mascaraCpf);
+		ftfCpfPaciente.setBounds(98, 97, 128, 20);
+		pPaciente.add(ftfCpfPaciente);
 		
 		JPanel pResponsavel = new JPanel();
 		pResponsavel.setLayout(null);
@@ -303,9 +331,41 @@ public class CadastroPaciente extends JFrame {
 		pResponsavel.add(lblNewLabel_11);
 		
 		JButton btnContinuarResponsavel = new JButton("Continuar");
+		btnContinuarResponsavel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
 		btnContinuarResponsavel.setBounds(287, 256, 89, 23);
 		pResponsavel.add(btnContinuarResponsavel);
 		
 		
+	}
+	
+	public void cadastrarPaciente() {
+		String dataNasc = tfDataNasc.getText();
+		DateTimeFormatter dataFormatar = DateTimeFormatter.ofPattern("dd/mm/yyyy");
+
+		String nomePaciente = tfNomePaciente.getText();
+		int cpf = Integer.parseInt(tfCpfPaciente.getText());
+		LocalDate dataNascFormatada = LocalDate.parse(dataNasc, dataFormatar);
+		int telefone = Integer.parseInt(tfTelefonePaciente.getText());
+		String email = tfEmailPaciente.getText();
+		
+		if () {
+			//utilizar o método cadastrarResponsavel do responsavelDao
+		} else {
+			//caso não tenha responsável, fazer um comando para deixar nulo aqui
+		}
+		
+		int cep = Integer.parseInt(tfCep.getText());
+		String rua = tfRua.getText();
+		String bairro = tfBairro.getText();
+		String uf = tfUf.getText();
+		String cidade = tfCidade.getText();
+		int numero = Integer.parseInt(tfNumero.getText());
+
+		Paciente paciente = new Paciente(nomePaciente, cpf, dataNascFormatada, telefone, email, null,null,0);
+
+		pacienteDao.cadastrarPaciente(paciente);
 	}
 }
