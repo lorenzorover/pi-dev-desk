@@ -1,14 +1,16 @@
 package window;
 
-import java.awt.Checkbox;
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -19,11 +21,11 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.MaskFormatter;
 
+import dao.EnderecoDao;
 import dao.PacienteDao;
+import dao.ResponsavelDao;
 import entidades.Paciente;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import javax.swing.JFormattedTextField;
+import entidades.Responsavel;
 
 public class CadastroPaciente extends JFrame {
 
@@ -47,6 +49,8 @@ public class CadastroPaciente extends JFrame {
 	private JTextField tfEmailResponsavel;
 	
 	private PacienteDao pacienteDao = new PacienteDao();
+	private ResponsavelDao responsavelDao = new ResponsavelDao();
+	private EnderecoDao enderecoDao = new EnderecoDao();
 
 	/**
 	 * Launch the application.
@@ -184,15 +188,6 @@ public class CadastroPaciente extends JFrame {
 		lblNewLabel_18.setBounds(10, 203, 46, 14);
 		pEndereco.add(lblNewLabel_18);
 		
-		JButton btnSalvar = new JButton("Salvar");
-		btnSalvar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				cadastrarPaciente();
-			}
-		});
-		btnSalvar.setBounds(287, 258, 89, 23);
-		pEndereco.add(btnSalvar);
-		
 		JPanel pPaciente = new JPanel();
 		pPaciente.setLayout(null);
 		pPaciente.setBackground(Color.LIGHT_GRAY);
@@ -255,14 +250,6 @@ public class CadastroPaciente extends JFrame {
 		chckbxResponsavel.setBackground(Color.LIGHT_GRAY);
 		chckbxResponsavel.setBounds(95, 217, 131, 23);
 		pPaciente.add(chckbxResponsavel);
-		
-		JButton btnContinuarPaciente = new JButton("Continuar");
-		btnContinuarPaciente.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			}
-		});
-		btnContinuarPaciente.setBounds(287, 258, 89, 23);
-		pPaciente.add(btnContinuarPaciente);
 		
 		MaskFormatter mascaraCpf;
 		
@@ -330,32 +317,73 @@ public class CadastroPaciente extends JFrame {
 		lblNewLabel_11.setBounds(48, 147, 27, 15);
 		pResponsavel.add(lblNewLabel_11);
 		
+		JButton btnContinuarPaciente = new JButton("Continuar");
+		btnContinuarPaciente.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				pPaciente.setVisible(false);
+				if (chckbxResponsavel.isSelected()) {
+					pResponsavel.setVisible(true);
+				} else {
+					pEndereco.setVisible(true);
+				}
+			}
+		});
+		btnContinuarPaciente.setBounds(287, 258, 89, 23);
+		pPaciente.add(btnContinuarPaciente);
+		
 		JButton btnContinuarResponsavel = new JButton("Continuar");
 		btnContinuarResponsavel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				pResponsavel.setVisible(false);
+				pEndereco.setVisible(true);
 			}
 		});
 		btnContinuarResponsavel.setBounds(287, 256, 89, 23);
 		pResponsavel.add(btnContinuarResponsavel);
 		
+		JButton btnSalvar = new JButton("Salvar");
+		btnSalvar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				boolean possuiResponsavel = false;
+				
+				if (chckbxResponsavel.isSelected()) {
+					possuiResponsavel = true;
+				}
+				
+				cadastrarEndereco();
+				cadastrarPaciente(possuiResponsavel);
+			}
+		});
+		btnSalvar.setBounds(287, 258, 89, 23);
+		pEndereco.add(btnSalvar);
 		
 	}
 	
-	public void cadastrarPaciente() {
+	public void cadastrarPaciente(boolean possuiResponsavel) {
 		String dataNasc = tfDataNasc.getText();
 		DateTimeFormatter dataFormatar = DateTimeFormatter.ofPattern("dd/mm/yyyy");
+		
+		Responsavel responsavel = new Responsavel(null, 0, 0, null);
 
 		String nomePaciente = tfNomePaciente.getText();
-		int cpf = Integer.parseInt(tfCpfPaciente.getText());
+		int cpfPaciente = Integer.parseInt();
 		LocalDate dataNascFormatada = LocalDate.parse(dataNasc, dataFormatar);
-		int telefone = Integer.parseInt(tfTelefonePaciente.getText());
-		String email = tfEmailPaciente.getText();
+		int telefonePaciente = Integer.parseInt(tfTelefonePaciente.getText());
+		String emailPaciente = tfEmailPaciente.getText();
 		
-		if () {
-			//utilizar o método cadastrarResponsavel do responsavelDao
+		if (possuiResponsavel == true) {
+			String nomeResponsavel = tfNomeResponsavel.getText();
+			int cpfResponsavel = Integer.parseInt(tfCpfResponsavel.getText());
+			int telefoneResponsavel = Integer.parseInt(tfTelefonePaciente.getText());
+			String emailResponsavel = tfEmailResponsavel.getText();
+			
+			responsavel = new Responsavel(nomeResponsavel, cpfResponsavel, telefoneResponsavel, emailResponsavel);
+			responsavelDao.cadastrarResponsavel(responsavel);
 		} else {
-			//caso não tenha responsável, fazer um comando para deixar nulo aqui
+			responsavel = null;
 		}
+		
+		//Perguntar pro professor se eu faço uma pesquisa por id e adiciono pelo id ou pelo objeto
 		
 		int cep = Integer.parseInt(tfCep.getText());
 		String rua = tfRua.getText();
@@ -364,8 +392,7 @@ public class CadastroPaciente extends JFrame {
 		String cidade = tfCidade.getText();
 		int numero = Integer.parseInt(tfNumero.getText());
 
-		Paciente paciente = new Paciente(nomePaciente, cpf, dataNascFormatada, telefone, email, null,null,0);
-
+		Paciente paciente = new Paciente(nomePaciente, cpfPaciente, dataNascFormatada, telefonePaciente, emailPaciente, null, responsavel, 0);
 		pacienteDao.cadastrarPaciente(paciente);
 	}
 }
