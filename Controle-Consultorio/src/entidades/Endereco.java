@@ -30,6 +30,10 @@ public class Endereco {
 		this.numero = numero;
 	}
 
+	public Endereco() {
+		// TODO Auto-generated constructor stub
+	}
+
 	public int getCep() {
 		return cep;
 	}

@@ -12,9 +12,14 @@ import java.util.List;
 
 import entidades.Endereco;
 import entidades.Paciente;
+import entidades.Paciente;
 import entidades.Responsavel;
 
 public class PacienteDao {
+	
+	private EnderecoDao enderecoDao = new EnderecoDao();
+	private ResponsavelDao responsavelDao = new ResponsavelDao();
+	
 	public Connection getConexao() throws ClassNotFoundException {
 
 		String driver = "com.mysql.cj.jdbc.Driver";
@@ -49,7 +54,7 @@ public class PacienteDao {
 			pst.setString(5, paciente.getEmail());
 			pst.setInt(6, paciente.getEndereco().getId());
 			pst.setInt(7, paciente.getResponsavel().getId());
-			pst.setInt(8, paciente.getDeletado());
+			pst.setBoolean(8, paciente.isDeletado());
 
 			pst.executeUpdate();
 
@@ -80,6 +85,7 @@ public class PacienteDao {
 			Connection conn = getConexao();
 			PreparedStatement pst = conn.prepareStatement(sql);
 			ResultSet rs = pst.executeQuery();
+			
 			while (rs.next()) {
 				int id = rs.getInt(1);
 				String nome = rs.getString(2);
@@ -87,21 +93,58 @@ public class PacienteDao {
 				Date dataNasc = rs.getDate(4);
 				int telefone = rs.getInt(5);
 				String email = rs.getString(6);
-				Endereco endereco = (Endereco) rs.getObject(7); // Achar um jeito de adicionar esse objeto
-				Responsavel responsavel = (Responsavel) rs.getObject(8); // Achar um jeito de adicionar esse objeto
-				int deletado = rs.getInt(9);
+				int enderecoId = rs.getInt(7);
+				int responsavelId = rs.getInt(8);
+				boolean deletado = rs.getBoolean(9);
+				
+				Endereco endereco = enderecoDao.pesquisarPorId(enderecoId);
+				Responsavel responsavel = responsavelDao.pesquisarPorId(responsavelId);
 
 				Paciente paciente = new Paciente(id, nome, cpf, dataNasc, telefone, email, endereco, responsavel, deletado);
 				pacientes.add(paciente);
-
 			}
+			
 			rs.close();
 			pst.close();
 			conn.close();
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return pacientes;
+	}
+	
+	public Paciente pesquisarPorId(int id) {
+		Paciente paciente = new Paciente();
+		String query = "SELECT * FROM paciente WHERE Id = ?";
+		try {
+			Connection con = getConexao();
+			PreparedStatement pst = con.prepareStatement(query);
+			pst.setInt(1, id);
+			ResultSet rs = pst.executeQuery();
+			while (rs.next()) {
+				id = rs.getInt(1);
+				String nome = rs.getString(2);
+				int cpf = rs.getInt(3);
+				Date dataNasc = rs.getDate(4);
+				int telefone = rs.getInt(5);
+				String email = rs.getString(6);
+				int enderecoId = rs.getInt(7);
+				int responsavelId = rs.getInt(8);
+				boolean deletado = rs.getBoolean(9);		
+				
+				Endereco endereco = enderecoDao.pesquisarPorId(enderecoId);
+				Responsavel responsavel = responsavelDao.pesquisarPorId(responsavelId);
+				
+				paciente = new Paciente(id, nome, cpf, dataNasc, telefone, email, endereco, responsavel, deletado);
+			}
+			pst.close();
+			pst.close();
+			con.close();
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		return paciente;
 	}
 
 	public void alterarPaciente(Paciente paciente) {
@@ -119,7 +162,7 @@ public class PacienteDao {
 			pst.setString(5, paciente.getEmail());
 			pst.setInt(6, paciente.getEndereco().getId());
 			pst.setInt(7, paciente.getResponsavel().getId());
-			pst.setInt(8, paciente.getDeletado());
+			pst.setBoolean(8, paciente.isDeletado());
 
 			pst.executeUpdate();
 
@@ -132,7 +175,7 @@ public class PacienteDao {
 
 	}
 	
-	public void deletarPaciente(int id) {
+	/*public void deletarPaciente(int id) {
 
 		//String sql = "DELETE paciente, endereco FROM paciente INNER JOIN endereco ON paciente.endereco_id = endereco.id WHERE paciente.id = ?";
 		
@@ -151,12 +194,12 @@ public class PacienteDao {
 			e.printStackTrace();
 		}
 
-	}
+	}*/
 
-	/*public void deletarPacienteCResponsavel(int id) {
+	public void deletarPaciente(int id) {
 
 		String sql = "DELETE paciente, responsavel, endereco FROM paciente INNER JOIN responsavel ON paciente.responsavel_id = responsavel.id "
-				+ "INNER JOIN endereco ON responsavel.endereco_id = endereco.id WHERE paciente.id = ?";
+				+ "INNER JOIN endereco ON paciente.endereco_id = endereco.id WHERE paciente.id = ?";
 		try {
 			Connection conn = getConexao();
 			PreparedStatement pst = conn.prepareStatement(sql);
@@ -171,6 +214,6 @@ public class PacienteDao {
 			e.printStackTrace();
 		}
 
-	}*/
+	}
 
 }

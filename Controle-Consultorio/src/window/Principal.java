@@ -13,9 +13,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
-import javax.swing.JTextField;
-
-import view.JanelaSecundaria;
 
 public class Principal {
 
@@ -62,6 +59,9 @@ public class Principal {
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
+				TabelaPaciente telaListaPaciente = new TabelaPaciente();
+				telaListaPaciente.setVisible(true);
+				telaListaPaciente.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 			}
 		});
 		btnNewButton.setBounds(10, 142, 121, 23);
@@ -122,22 +122,24 @@ public class Principal {
 		painel.add(tratamento);
 		painel.add(consulta);
 
-		int resultado = JOptionPane.showConfirmDialog(null, painel, "Pesquisar", JOptionPane.OK_CANCEL_OPTION);
+		int resultado = JOptionPane.showConfirmDialog(null, painel, "Cadastrar", JOptionPane.OK_CANCEL_OPTION);
 		
 		if (resultado == JOptionPane.OK_OPTION) {
 			if (paciente.isSelected()) {
-				CadastroPaciente tela = new CadastroPaciente();
-				tela.setVisible(true);
-				tela.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+				CadastroPaciente telaCadastro = new CadastroPaciente();
+				telaCadastro.setVisible(true);
+				telaCadastro.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 			} else if (tratamento.isSelected()){
-				CadastroTratamento tela = new CadastroTratamento();
-				tela.setVisible(true);
-				tela.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+				CadastroTratamento telaCadastro = new CadastroTratamento();
+				telaCadastro.setVisible(true);
+				telaCadastro.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 				
-			} else if (tratamento.isSelected()){
-				
+			} else if (consulta.isSelected()){
+				CadastroConsulta telaCadastro = new CadastroConsulta();
+				telaCadastro.setVisible(true);
+				telaCadastro.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 			} else {
-				//Fazer um dialog de erro aqui caso não selecione nenhum
+				JOptionPane.showMessageDialog(null, "Selecione uma opção");
 			}
 		}
 	}

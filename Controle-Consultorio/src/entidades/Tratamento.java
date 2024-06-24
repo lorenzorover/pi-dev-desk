@@ -5,9 +5,9 @@ public class Tratamento {
 	private String nome;
 	private double preco;
 	private String descricao;
-	private int deletado;
+	private boolean deletado;
 
-	public Tratamento(int id, String nome, double preco, String descricao, int deletado) {
+	public Tratamento(int id, String nome, double preco, String descricao, boolean deletado) {
 		super();
 		this.id = id;
 		this.nome = nome;
@@ -16,12 +16,16 @@ public class Tratamento {
 		this.deletado = deletado;
 	}
 
-	public Tratamento(String nome, double preco, String descricao, int deletado) {
+	public Tratamento(String nome, double preco, String descricao, boolean deletado) {
 		super();
 		this.nome = nome;
 		this.preco = preco;
 		this.descricao = descricao;
 		this.deletado = deletado;
+	}
+
+	public Tratamento() {
+		// TODO Auto-generated constructor stub
 	}
 
 	public String getNome() {
@@ -48,20 +52,12 @@ public class Tratamento {
 		this.descricao = descricao;
 	}
 
-	public int getDeletado() {
+	public boolean isDeletado() {
 		return deletado;
 	}
 
-	public void setDeletado(int deletado) {
+	public void setDeletado(boolean deletado) {
 		this.deletado = deletado;
-	}
-
-	public boolean isDeletadoAsBoolean() {
-		return deletado != 0;
-	}
-
-	public void setDeletadoAsBoolean(boolean deletado) {
-		this.deletado = deletado ? 1 : 0;
 	}
 
 	public int getId() {
@@ -70,8 +66,7 @@ public class Tratamento {
 
 	@Override
 	public String toString() {
-		return "Tratamento [id=" + id + ", nome=" + nome + ", preco=" + preco + ", descricao=" + descricao
-				+ ", deletado=" + deletado + "]";
+		return this.nome;
 	}
 
 }

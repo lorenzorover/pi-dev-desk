@@ -6,9 +6,9 @@ public class Produto {
 	private String categoria;
 	private String descricao;
 	private Compra compra;
-	private int deletado;
+	private boolean deletado;
 
-	public Produto(int id, String nome, String categoria, String descricao, Compra compra, int deletado) {
+	public Produto(int id, String nome, String categoria, String descricao, Compra compra, boolean deletado) {
 		super();
 		this.id = id;
 		this.nome = nome;
@@ -18,13 +18,17 @@ public class Produto {
 		this.deletado = deletado;
 	}
 
-	public Produto(String nome, String categoria, String descricao, Compra compra, int deletado) {
+	public Produto(String nome, String categoria, String descricao, Compra compra, boolean deletado) {
 		super();
 		this.nome = nome;
 		this.categoria = categoria;
 		this.descricao = descricao;
 		this.compra = compra;
 		this.deletado = deletado;
+	}
+
+	public Produto() {
+		// TODO Auto-generated constructor stub
 	}
 
 	public String getNome() {
@@ -59,20 +63,12 @@ public class Produto {
 		this.compra = compra;
 	}
 
-	public int getDeletado() {
+	public boolean isDeletado() {
 		return deletado;
 	}
 
-	public void setDeletado(int deletado) {
+	public void setDeletado(boolean deletado) {
 		this.deletado = deletado;
-	}
-
-	public boolean isDeletadoAsBoolean() {
-		return deletado != 0;
-	}
-
-	public void setDeletadoAsBoolean(boolean deletado) {
-		this.deletado = deletado ? 1 : 0;
 	}
 
 	public int getId() {
@@ -81,8 +77,7 @@ public class Produto {
 
 	@Override
 	public String toString() {
-		return "Produto [id=" + id + ", nome=" + nome + ", categoria=" + categoria + ", descricao=" + descricao
-				+ ", compra=" + compra + ", deletado=" + deletado + "]";
+		return this.nome;
 	}
 
 }

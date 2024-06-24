@@ -26,6 +26,10 @@ public class Compra {
 		this.quantidade = quantidade;
 	}
 
+	public Compra() {
+		// TODO Auto-generated constructor stub
+	}
+
 	public double getPreco() {
 		return preco;
 	}

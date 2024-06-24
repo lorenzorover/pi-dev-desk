@@ -24,6 +24,10 @@ public class Responsavel {
 		this.email = email;
 	}
 
+	public Responsavel() {
+		// TODO Auto-generated constructor stub
+	}
+
 	public String getNome() {
 		return nome;
 	}

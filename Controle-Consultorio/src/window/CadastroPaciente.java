@@ -5,6 +5,7 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Date;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -13,9 +14,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
@@ -24,6 +22,7 @@ import javax.swing.text.MaskFormatter;
 import dao.EnderecoDao;
 import dao.PacienteDao;
 import dao.ResponsavelDao;
+import entidades.Endereco;
 import entidades.Paciente;
 import entidades.Responsavel;
 
@@ -31,8 +30,6 @@ public class CadastroPaciente extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	private JMenuBar menuBar;
-	private JMenu mnNewMenu;
 	private JTextField tfCep;
 	private JTextField tfRua;
 	private JTextField tfBairro;
@@ -40,13 +37,19 @@ public class CadastroPaciente extends JFrame {
 	private JTextField tfCidade;
 	private JTextField tfNumero;
 	private JTextField tfNomePaciente;
-	private JTextField tfDataNasc;
+	private JFormattedTextField ftfDataNasc;
 	private JTextField tfTelefonePaciente;
 	private JTextField tfEmailPaciente;
 	private JTextField tfNomeResponsavel;
 	private JTextField tfCpfResponsavel;
 	private JTextField tfTelefoneResponsavel;
 	private JTextField tfEmailResponsavel;
+	private JCheckBox chckbxResponsavel;
+	private JFormattedTextField ftfCpfPaciente;
+	
+	private DateTimeFormatter dataFormatar = DateTimeFormatter.ofPattern("dd/mm/yyyy");
+	private MaskFormatter mascaraCpf;
+	private MaskFormatter mascaraData;
 	
 	private PacienteDao pacienteDao = new PacienteDao();
 	private ResponsavelDao responsavelDao = new ResponsavelDao();
@@ -73,31 +76,7 @@ public class CadastroPaciente extends JFrame {
 	 */
 	public CadastroPaciente() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 402, 396);
-		
-		menuBar = new JMenuBar();
-		setJMenuBar(menuBar);
-		
-		mnNewMenu = new JMenu("Menu");
-		menuBar.add(mnNewMenu);
-		
-		JMenuItem mntmNewMenuItem = new JMenuItem("Cadastro");
-		mnNewMenu.add(mntmNewMenuItem);
-		
-		JMenuItem mntmNewMenuItem_1 = new JMenuItem("Listagem");
-		mnNewMenu.add(mntmNewMenuItem_1);
-		
-		JMenu mnNewMenu_1 = new JMenu("Consulta");
-		mnNewMenu.add(mnNewMenu_1);
-		
-		JMenuItem mntmNewMenuItem_3 = new JMenuItem("Agendadas");
-		mnNewMenu_1.add(mntmNewMenuItem_3);
-		
-		JMenuItem mntmNewMenuItem_4 = new JMenuItem("Finalizadas");
-		mnNewMenu_1.add(mntmNewMenuItem_4);
-		
-		JMenuItem mntmNewMenuItem_2 = new JMenuItem("Produtos");
-		mnNewMenu.add(mntmNewMenuItem_2);
+		setBounds(100, 100, 402, 373);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 
@@ -220,10 +199,17 @@ public class CadastroPaciente extends JFrame {
 		lblNewLabel_5.setBounds(11, 125, 63, 30);
 		pPaciente.add(lblNewLabel_5);
 		
-		tfDataNasc = new JTextField();
-		tfDataNasc.setColumns(10);
-		tfDataNasc.setBounds(98, 128, 86, 20);
-		pPaciente.add(tfDataNasc);
+		try {
+            mascaraData = new MaskFormatter("##/##/####");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+		
+		ftfDataNasc = new JFormattedTextField(mascaraData);
+		ftfDataNasc.setColumns(10);
+		ftfDataNasc.setBounds(98, 128, 86, 20);
+		pPaciente.add(ftfDataNasc);
 		
 		tfTelefonePaciente = new JTextField();
 		tfTelefonePaciente.setColumns(10);
@@ -251,8 +237,6 @@ public class CadastroPaciente extends JFrame {
 		chckbxResponsavel.setBounds(95, 217, 131, 23);
 		pPaciente.add(chckbxResponsavel);
 		
-		MaskFormatter mascaraCpf;
-		
 		try {
             mascaraCpf = new MaskFormatter("###.###.###-##");
         } catch (Exception e) {
@@ -260,7 +244,7 @@ public class CadastroPaciente extends JFrame {
             return;
         }
 		
-		JFormattedTextField ftfCpfPaciente = new JFormattedTextField(mascaraCpf);
+		ftfCpfPaciente = new JFormattedTextField(mascaraCpf);
 		ftfCpfPaciente.setBounds(98, 97, 128, 20);
 		pPaciente.add(ftfCpfPaciente);
 		
@@ -345,13 +329,17 @@ public class CadastroPaciente extends JFrame {
 		btnSalvar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				boolean possuiResponsavel = false;
+				Responsavel responsavel = new Responsavel(null, 0, 0, null);
+				Endereco endereco = new Endereco(0, null, null, null, null, 0);
 				
 				if (chckbxResponsavel.isSelected()) {
-					possuiResponsavel = true;
+					cadastrarResponsavel(responsavel);
+				} else {
+					responsavel = null;
 				}
 				
-				cadastrarEndereco();
-				cadastrarPaciente(possuiResponsavel);
+				cadastrarEndereco(endereco);
+				cadastrarPaciente(responsavel, endereco);
 			}
 		});
 		btnSalvar.setBounds(287, 258, 89, 23);
@@ -359,40 +347,39 @@ public class CadastroPaciente extends JFrame {
 		
 	}
 	
-	public void cadastrarPaciente(boolean possuiResponsavel) {
-		String dataNasc = tfDataNasc.getText();
-		DateTimeFormatter dataFormatar = DateTimeFormatter.ofPattern("dd/mm/yyyy");
+	public void cadastrarResponsavel(Responsavel responsavel) {
+		String nomeResponsavel = tfNomeResponsavel.getText();
+		int cpfResponsavel = Integer.parseInt(tfCpfResponsavel.getText());
+		int telefoneResponsavel = Integer.parseInt(tfTelefonePaciente.getText());
+		String emailResponsavel = tfEmailResponsavel.getText();
 		
-		Responsavel responsavel = new Responsavel(null, 0, 0, null);
-
-		String nomePaciente = tfNomePaciente.getText();
-		int cpfPaciente = Integer.parseInt();
-		LocalDate dataNascFormatada = LocalDate.parse(dataNasc, dataFormatar);
-		int telefonePaciente = Integer.parseInt(tfTelefonePaciente.getText());
-		String emailPaciente = tfEmailPaciente.getText();
-		
-		if (possuiResponsavel == true) {
-			String nomeResponsavel = tfNomeResponsavel.getText();
-			int cpfResponsavel = Integer.parseInt(tfCpfResponsavel.getText());
-			int telefoneResponsavel = Integer.parseInt(tfTelefonePaciente.getText());
-			String emailResponsavel = tfEmailResponsavel.getText();
-			
-			responsavel = new Responsavel(nomeResponsavel, cpfResponsavel, telefoneResponsavel, emailResponsavel);
-			responsavelDao.cadastrarResponsavel(responsavel);
-		} else {
-			responsavel = null;
-		}
-		
-		//Perguntar pro professor se eu faço uma pesquisa por id e adiciono pelo id ou pelo objeto
-		
+		responsavel = new Responsavel(nomeResponsavel, cpfResponsavel, telefoneResponsavel, emailResponsavel);
+		responsavelDao.cadastrarResponsavel(responsavel);
+	}
+	
+	public void cadastrarEndereco(Endereco endereco) {
 		int cep = Integer.parseInt(tfCep.getText());
 		String rua = tfRua.getText();
 		String bairro = tfBairro.getText();
 		String uf = tfUf.getText();
 		String cidade = tfCidade.getText();
 		int numero = Integer.parseInt(tfNumero.getText());
+		
+		endereco = new Endereco(cep, rua, bairro, uf, cidade, numero);
+		enderecoDao.cadastrarEndereco(endereco);
+	}
+	
+	public void cadastrarPaciente(Responsavel responsavel, Endereco endereco) {
+		String data = ftfDataNasc.getText();
+		LocalDate dataFormatada = LocalDate.parse(data, dataFormatar);
 
-		Paciente paciente = new Paciente(nomePaciente, cpfPaciente, dataNascFormatada, telefonePaciente, emailPaciente, null, responsavel, 0);
+		String nomePaciente = tfNomePaciente.getText();
+		int cpfPaciente = Integer.parseInt(ftfCpfPaciente.getText()); 
+		Date dataNasc = Date.valueOf(dataFormatada);
+		int telefonePaciente = Integer.parseInt(tfTelefonePaciente.getText());
+		String emailPaciente = tfEmailPaciente.getText();
+
+		Paciente paciente = new Paciente(nomePaciente, cpfPaciente, dataNasc, telefonePaciente, emailPaciente, endereco, responsavel, false);
 		pacienteDao.cadastrarPaciente(paciente);
 	}
 }

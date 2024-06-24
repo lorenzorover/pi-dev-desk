@@ -84,6 +84,33 @@ public class EnderecoDao {
 		}
 		return enderecos;
 	}
+	
+	public Endereco pesquisarPorId(int id) {
+		Endereco endereco = new Endereco();
+		String query = "SELECT * FROM endereco WHERE Id = ?";
+		try {
+			Connection con = getConexao();
+			PreparedStatement pst = con.prepareStatement(query);
+			pst.setInt(1, id);
+			ResultSet rs = pst.executeQuery();
+			while (rs.next()) {
+				id = rs.getInt(1);
+				int cep = rs.getInt(2);
+				String rua = rs.getString(3);
+				String bairro = rs.getString(4);
+				String uf = rs.getString(5);
+				String cidade = rs.getString(6);
+				int numero = rs.getInt(7);			
+				endereco = new Endereco(id, cep, rua, bairro, uf, cidade, numero);
+			}
+			pst.close();
+			pst.close();
+			con.close();
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		return endereco;
+	}
 
 	public void alterarEndereco(Endereco endereco) {
 

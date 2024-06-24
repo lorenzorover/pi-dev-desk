@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import entidades.Tratamento;
+import entidades.Tratamento;
 
 public class TratamentoDao {
 	public Connection getConexao() throws ClassNotFoundException {
@@ -40,8 +41,8 @@ public class TratamentoDao {
 			pst.setString(1, tratamento.getNome());
 			pst.setDouble(2, tratamento.getPreco());
 			pst.setString(3, tratamento.getDescricao());
-			pst.setInt(4, tratamento.getDeletado());
-
+			pst.setBoolean(4, tratamento.isDeletado());
+			
 			pst.executeUpdate();
 
 			pst.close();
@@ -66,7 +67,7 @@ public class TratamentoDao {
 				String nome = rs.getString(2);
 				Double preco = rs.getDouble(3);
 				String descricao = rs.getString(4);
-				int deletado = rs.getInt(5);
+				boolean deletado = rs.getBoolean(5);
 
 				Tratamento tratamento = new Tratamento(id, nome, preco, descricao, deletado);
 				tratamentos.add(tratamento);
@@ -80,6 +81,32 @@ public class TratamentoDao {
 		}
 		return tratamentos;
 	}
+	
+	public Tratamento pesquisarPorId(int id) {
+		Tratamento tratamento = new Tratamento();
+		String query = "SELECT * FROM tratamentos WHERE Id = ?";
+		try {
+			Connection con = getConexao();
+			PreparedStatement pst = con.prepareStatement(query);
+			pst.setInt(1, id);
+			ResultSet rs = pst.executeQuery();
+			while (rs.next()) {
+				id = rs.getInt(1);
+				String nome = rs.getString(2);
+				Double preco = rs.getDouble(3);
+				String descricao = rs.getString(4);
+				boolean deletado = rs.getBoolean(5);
+				
+				tratamento = new Tratamento(id, nome, preco, descricao, deletado);
+			}
+			pst.close();
+			pst.close();
+			con.close();
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		return tratamento;
+	}
 
 	public void alterarTratamento(Tratamento tratamento) {
 
@@ -92,7 +119,7 @@ public class TratamentoDao {
 			pst.setString(1, tratamento.getNome());
 			pst.setDouble(2, tratamento.getPreco());
 			pst.setString(3, tratamento.getDescricao());
-			pst.setInt(4, tratamento.getDeletado());
+			pst.setBoolean(4, tratamento.isDeletado());
 
 			pst.executeUpdate();
 

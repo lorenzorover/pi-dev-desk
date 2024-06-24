@@ -11,10 +11,10 @@ public class Paciente {
 	private String email;
 	private Endereco endereco;
 	private Responsavel responsavel;
-	private int deletado;
+	private boolean deletado;
 
 	public Paciente(int id, String nome, int cpf, Date dataNasc, int telefone, String email, Endereco endereco,
-			Responsavel responsavel, int deletado) {
+			Responsavel responsavel, boolean deletado) {
 		super();
 		this.id = id;
 		this.nome = nome;
@@ -28,7 +28,7 @@ public class Paciente {
 	}
 
 	public Paciente(String nome, int cpf, Date dataNasc, int telefone, String email, Endereco endereco,
-			Responsavel responsavel, int deletado) {
+			Responsavel responsavel, boolean deletado) {
 		super();
 		this.nome = nome;
 		this.cpf = cpf;
@@ -38,6 +38,10 @@ public class Paciente {
 		this.endereco = endereco;
 		this.responsavel = responsavel;
 		this.deletado = deletado;
+	}
+
+	public Paciente() {
+		// TODO Auto-generated constructor stub
 	}
 
 	public String getNome() {
@@ -96,20 +100,12 @@ public class Paciente {
 		this.responsavel = responsavel;
 	}
 
-	public int getDeletado() {
+	public boolean isDeletado() {
 		return deletado;
 	}
 
-	public void setDeletado(int deletado) {
+	public void setDeletado(boolean deletado) {
 		this.deletado = deletado;
-	}
-
-	public boolean isDeletadoAsBoolean() {
-		return deletado != 0;
-	}
-
-	public void setDeletadoAsBoolean(boolean deletado) {
-		this.deletado = deletado ? 1 : 0;
 	}
 
 	public int getId() {
@@ -118,9 +114,6 @@ public class Paciente {
 
 	@Override
 	public String toString() {
-		return "Paciente [id=" + id + ", nome=" + nome + ", cpf=" + cpf + ", dataNasc=" + dataNasc + ", telefone="
-				+ telefone + ", email=" + email + ", endereco=" + endereco + ", responsavel=" + responsavel
-				+ ", deletado=" + deletado + "]";
+		return this.nome;
 	}
-
 }

@@ -13,6 +13,8 @@ import entidades.Compra;
 import entidades.Produto;
 
 public class ProdutoDao {
+	
+	CompraDao compraDao = new CompraDao();
 
 	public Connection getConexao() throws ClassNotFoundException {
 
@@ -45,7 +47,7 @@ public class ProdutoDao {
 			pst.setString(2, produto.getCategoria());
 			pst.setString(3, produto.getDescricao());
 			pst.setInt(4, produto.getCompra().getId());
-			pst.setInt(5, produto.getDeletado());
+			pst.setBoolean(5, produto.isDeletado());
 
 			pst.executeUpdate();
 
@@ -81,8 +83,10 @@ public class ProdutoDao {
 				String nome = rs.getString(2);
 				String categoria = rs.getString(3);
 				String descricao = rs.getString(4);
-				Compra compra = (Compra) rs.getObject(5); // Achar um jeito de adicionar esse objeto
-				int deletado = rs.getInt(6);
+				int compraId = rs.getInt(5);
+				boolean deletado = rs.getBoolean(6);
+				
+				Compra compra = compraDao.pesquisarPorId(compraId);
 
 				Produto produto = new Produto(id, nome, categoria, descricao, compra, deletado);
 				produtos.add(produto);
@@ -95,6 +99,35 @@ public class ProdutoDao {
 			e.printStackTrace();
 		}
 		return produtos;
+	}
+	
+	public Produto pesquisarPorId(int id) {
+		Produto produto = new Produto();
+		String query = "SELECT * FROM produto WHERE Id = ?";
+		try {
+			Connection con = getConexao();
+			PreparedStatement pst = con.prepareStatement(query);
+			pst.setInt(1, id);
+			ResultSet rs = pst.executeQuery();
+			while (rs.next()) {
+				id = rs.getInt(1);
+				String nome = rs.getString(2);
+				String categoria = rs.getString(3);
+				String descricao = rs.getString(4);
+				int compraId = rs.getInt(5);
+				boolean deletado = rs.getBoolean(6);
+				
+				Compra compra = compraDao.pesquisarPorId(compraId);		
+				
+				produto = new Produto(id, nome, categoria, descricao, compra, deletado);
+			}
+			pst.close();
+			pst.close();
+			con.close();
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		return produto;
 	}
 
 	public void alterarProduto(Produto produto) {
@@ -109,7 +142,7 @@ public class ProdutoDao {
 			pst.setString(2, produto.getCategoria());
 			pst.setString(3, produto.getDescricao());
 			pst.setInt(4, produto.getCompra().getId());
-			pst.setInt(5, produto.getDeletado());
+			pst.setBoolean(5, produto.isDeletado());
 
 			pst.executeUpdate();
 
@@ -124,9 +157,8 @@ public class ProdutoDao {
 
 	public void deletarProduto(int id) {
 
-		//String sql = "DELETE produto, compra FROM produto INNER JOIN compra ON produto.compra_id = compra.id WHERE produto.id = ?";
+		String sql = "DELETE produto, compra FROM produto INNER JOIN compra ON produto.compra_id = compra.id WHERE produto.id = ?";
 		
-		String sql = "DELETE FROM produto WHERE id = ?";
 		try {
 			Connection conn = getConexao();
 			PreparedStatement pst = conn.prepareStatement(sql);

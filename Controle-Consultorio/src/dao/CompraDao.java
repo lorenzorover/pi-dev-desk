@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import entidades.Compra;
+import entidades.Compra;
 
 public class CompraDao {
 
@@ -81,6 +82,32 @@ public class CompraDao {
 			e.printStackTrace();
 		}
 		return compras;
+	}
+	
+	public Compra pesquisarPorId(int id) {
+		Compra compra = new Compra();
+		String query = "SELECT * FROM compra WHERE Id = ?";
+		try {
+			Connection con = getConexao();
+			PreparedStatement pst = con.prepareStatement(query);
+			pst.setInt(1, id);
+			ResultSet rs = pst.executeQuery();
+			while (rs.next()) {
+				id = rs.getInt(1);
+				Double preco = rs.getDouble(2);
+				Date validade = rs.getDate(3);
+				Date dataCompra = rs.getDate(4);
+				int quantidade = rs.getInt(5);		
+				
+				compra = new Compra(id, preco, validade, dataCompra, quantidade);
+			}
+			pst.close();
+			pst.close();
+			con.close();
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		return compra;
 	}
 
 	public void alterarCompra(Compra compra) {

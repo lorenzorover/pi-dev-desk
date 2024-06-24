@@ -11,6 +11,7 @@ import java.util.List;
 
 import entidades.Endereco;
 import entidades.Responsavel;
+import entidades.Responsavel;
 
 public class ResponsavelDao {
 	public Connection getConexao() throws ClassNotFoundException {
@@ -92,6 +93,31 @@ public class ResponsavelDao {
 			e.printStackTrace();
 		}
 		return responsaveis;
+	}
+	
+	public Responsavel pesquisarPorId(int id) {
+		Responsavel responsavel = new Responsavel();
+		String query = "SELECT * FROM responsavel WHERE Id = ?";
+		try {
+			Connection con = getConexao();
+			PreparedStatement pst = con.prepareStatement(query);
+			pst.setInt(1, id);
+			ResultSet rs = pst.executeQuery();
+			while (rs.next()) {
+				id = rs.getInt(1);
+				String nome = rs.getString(2);
+				int cpf = rs.getInt(3);
+				int telefone = rs.getInt(4);
+				String email = rs.getString(5);			
+				responsavel = new Responsavel(id, nome, cpf, telefone, email);
+			}
+			pst.close();
+			pst.close();
+			con.close();
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		return responsavel;
 	}
 
 	public void alterarResponsavel(Responsavel responsavel) {

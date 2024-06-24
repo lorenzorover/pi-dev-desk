@@ -45,10 +45,10 @@ public class ConsultaDao {
 
 			pst.setTimestamp(1, consulta.getDataHora());
 			pst.setString(2, consulta.getDescricao());
-			pst.setInt(3, consulta.getComparecimento());
+			pst.setBoolean(3, consulta.isComparecimento();
 			pst.setInt(4, consulta.getPaciente().getId());
 			pst.setInt(5, consulta.getTratamento().getId());
-			pst.setInt(6, consulta.getProduto().getId());
+//			pst.setInt(6, consulta.getProduto().getId());
 
 			pst.executeUpdate();
 
@@ -89,27 +89,14 @@ public class ConsultaDao {
 				int id = rs.getInt(1);
 				Timestamp dataHora = rs.getTimestamp(2);
 				String descricao = rs.getString(3);
-				int comparecimento = rs.getInt(4);
-				
+				boolean comparecimento = rs.getBoolean(4);
 				int pacienteId = rs.getInt(5);
-				String nomePaciente = rs.getString(8);
-				int cpf = rs.getInt(9);
-				Date dataNasc = rs.getDate(10);
-				int telefone = rs.getInt(11);
-				String email = rs.getString(12);
-				int enderecoId = rs.getInt(13);
-				int responsavelId = rs.getInt(14);
-				int deletadoPaciente = rs.getInt(15);
-				Paciente paciente = new Paciente(pacienteId, nomePaciente, cpf, dataNasc, telefone, email, null, null, deletadoPaciente);
-
 				int tratamentoId = rs.getInt(6);
-				String nome = rs.getString(17);
-				double preco = rs.getDouble(18);
-				String descricaoTratamento = rs.getString(19);
-				int deletadoTratamento = rs.getInt(20);
-				Tratamento tratamento = new Tratamento(tratamentoId, nome, preco, descricaoTratamento, deletadoTratamento);
 				
-				Consulta consulta = new Consulta(id, dataHora, descricao, comparecimento, paciente, tratamento, null);
+				Paciente paciente = pacienteDao.pesquisarPorId(pacienteId);
+				Tratamento tratamento = tratamentoDao.pesquisarPorId(tratamentoId);
+				
+				Consulta consulta = new Consulta(id, dataHora, descricao, comparecimento, paciente, tratamento);
 				lista.add(consulta);
 
 			}
@@ -135,10 +122,10 @@ public class ConsultaDao {
 
 			pst.setTimestamp(1, consulta.getDataHora());
 			pst.setString(2, consulta.getDescricao());
-			pst.setInt(3, consulta.getComparecimento());
+			pst.setBoolean(3, consulta.isComparecimento());
 			pst.setInt(4, consulta.getPaciente().getId());
 			pst.setInt(5, consulta.getTratamento().getId());
-			// pst.setInt(6, consulta.getProduto().getId());
+//			pst.setInt(6, consulta.getProduto().getId());
 
 			pst.executeUpdate();
 
