@@ -16,6 +16,10 @@ import entidades.Paciente;
 import entidades.Tratamento;
 
 public class ConsultaDao {
+	
+	PacienteDao pacienteDao = new PacienteDao();
+	TratamentoDao tratamentoDao = new TratamentoDao();
+	
 	public Connection getConexao() throws ClassNotFoundException {
 
 		String driver = "com.mysql.cj.jdbc.Driver";
@@ -45,7 +49,7 @@ public class ConsultaDao {
 
 			pst.setTimestamp(1, consulta.getDataHora());
 			pst.setString(2, consulta.getDescricao());
-			pst.setBoolean(3, consulta.isComparecimento();
+			pst.setBoolean(3, consulta.isComparecimento());
 			pst.setInt(4, consulta.getPaciente().getId());
 			pst.setInt(5, consulta.getTratamento().getId());
 //			pst.setInt(6, consulta.getProduto().getId());
@@ -110,6 +114,36 @@ public class ConsultaDao {
 		}
 
 		return lista;
+	}
+	
+	public Consulta pesquisarPorId(int id) {
+		Consulta consulta = new Consulta();
+		String query = "SELECT * FROM consulta WHERE Id = ?";
+		try {
+			Connection con = getConexao();
+			PreparedStatement pst = con.prepareStatement(query);
+			pst.setInt(1, id);
+			ResultSet rs = pst.executeQuery();
+			while (rs.next()) {
+				id = rs.getInt(1);
+				Timestamp dataHora = rs.getTimestamp(2);
+				String descricao = rs.getString(3);
+				boolean comparecimento = rs.getBoolean(4);
+				int pacienteId = rs.getInt(5);
+				int tratamentoId = rs.getInt(6);		
+				
+				Paciente paciente = pacienteDao.pesquisarPorId(pacienteId);
+				Tratamento tratamento = tratamentoDao.pesquisarPorId(tratamentoId);
+				
+				consulta = new Consulta(tratamentoId, dataHora, descricao, comparecimento, paciente, tratamento);
+			}
+			pst.close();
+			pst.close();
+			con.close();
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		return consulta;
 	}
 
 	public void alterarConsulta(Consulta consulta) {

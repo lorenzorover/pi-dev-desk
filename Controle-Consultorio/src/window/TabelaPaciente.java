@@ -90,6 +90,7 @@ public class TabelaPaciente extends JFrame {
 		contentPane.setLayout(null);
 
 		JPanel panel = new JPanel();
+		panel.setBackground(new Color(192, 192, 192));
 		panel.setBounds(0, 44, 675, 295);
 		contentPane.add(panel);
 		panel.setLayout(null);
@@ -158,6 +159,9 @@ public class TabelaPaciente extends JFrame {
 		btnNewButton = new JButton("Editar");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+
+				// Confirmar se posso instanciar um paciente zerado aqui, sendo que ele recebe
+				// outros parametros adiante
 				Paciente paciente = new Paciente();
 				String opcao = null;
 				paciente = (Paciente) selecionarLinhaPorId(paciente);
@@ -171,6 +175,8 @@ public class TabelaPaciente extends JFrame {
 					} else if (opcaoRetornada.equals("endereco")) {
 						editarEndereco(paciente);
 					}
+				} else {
+					JOptionPane.showMessageDialog(null, "Selecione uma linha");
 				}
 			}
 		});
@@ -190,7 +196,9 @@ public class TabelaPaciente extends JFrame {
 						informacoesAdicionaisResponsavel(paciente);
 					} else if (opcaoRetornada == "endereco") {
 						informacoesAdicionaisEndereco(paciente);
-					}
+					} 
+				} else {
+					JOptionPane.showMessageDialog(null, "Selecione uma linha");
 				}
 			}
 		});
@@ -211,8 +219,12 @@ public class TabelaPaciente extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				Paciente paciente = new Paciente();
 				paciente = (Paciente) selecionarLinhaPorId(paciente);
-
-				excluirPaciente(paciente);
+				
+				if (paciente != null) {
+					excluirPaciente(paciente);
+				} else {
+					JOptionPane.showMessageDialog(null, "Selecione uma linha");
+				}
 			}
 		});
 		btnNewButton_3.setBounds(393, 261, 89, 23);
@@ -558,12 +570,13 @@ public class TabelaPaciente extends JFrame {
 	public void excluirPaciente(Paciente paciente) {
 
 		int resultado = JOptionPane.showConfirmDialog(null,
-				"Você está prestes a deletar o paciente " + paciente.getNome(), "ALERTA", JOptionPane.WARNING_MESSAGE);
+				"Você está prestes a deletar o paciente " + paciente.getNome(), "ALERTA", JOptionPane.YES_NO_OPTION,
+				JOptionPane.WARNING_MESSAGE);
 
 		if (resultado == JOptionPane.OK_OPTION) {
 			paciente.setDeletado(true);
 		}
-		
+
 		atualizarTabela();
 	}
 
@@ -576,9 +589,8 @@ public class TabelaPaciente extends JFrame {
 			paciente = pacienteDao.pesquisarPorId(id);
 			return paciente;
 		} else {
-			JOptionPane.showMessageDialog(null, "Selecione uma linha");
+			return null;
 		}
-		return null;
 	}
 
 }

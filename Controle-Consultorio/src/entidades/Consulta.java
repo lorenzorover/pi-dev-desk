@@ -30,6 +30,10 @@ public class Consulta {
 		this.tratamento = tratamento;
 	}
 
+	public Consulta() {
+		// TODO Auto-generated constructor stub
+	}
+
 	public Timestamp getDataHora() {
 		return dataHora;
 	}

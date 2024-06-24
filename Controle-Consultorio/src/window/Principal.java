@@ -86,22 +86,17 @@ public class Principal {
 		btnNewButton_2.setBounds(10, 227, 121, 23);
 		frame.getContentPane().add(btnNewButton_2);
 		
-		JButton btnNewButton_3 = new JButton("<html>Consultas<br>Agendadas</html>");
+		JButton btnNewButton_3 = new JButton("<html>Conferir<br>Consultas</html>");
 		btnNewButton_3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
+				TabelaConsulta telaListaConsulta = new TabelaConsulta();
+				telaListaConsulta.setVisible(true);
+				telaListaConsulta.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 			}
 		});
-		btnNewButton_3.setBounds(10, 178, 96, 38);
+		btnNewButton_3.setBounds(10, 178, 79, 37);
 		frame.getContentPane().add(btnNewButton_3);
-		
-		JButton btnNewButton_4 = new JButton("<html>Consultas<br>Finalizadas</html>");
-		btnNewButton_4.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			}
-		});
-		btnNewButton_4.setBounds(116, 178, 96, 38);
-		frame.getContentPane().add(btnNewButton_4);
 	}
 	
 	
