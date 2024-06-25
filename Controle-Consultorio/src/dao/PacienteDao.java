@@ -116,7 +116,7 @@ public class PacienteDao {
 	
 	public Paciente pesquisarPorId(int id) {
 		Paciente paciente = new Paciente();
-		String query = "SELECT * FROM paciente WHERE Id = ?";
+		String query = "SELECT * FROM paciente WHERE id = ?";
 		try {
 			Connection con = getConexao();
 			PreparedStatement pst = con.prepareStatement(query);

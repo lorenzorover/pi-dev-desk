@@ -86,7 +86,7 @@ public class CompraDao {
 	
 	public Compra pesquisarPorId(int id) {
 		Compra compra = new Compra();
-		String query = "SELECT * FROM compra WHERE Id = ?";
+		String query = "SELECT * FROM compra WHERE id = ?";
 		try {
 			Connection con = getConexao();
 			PreparedStatement pst = con.prepareStatement(query);

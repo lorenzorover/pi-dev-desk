@@ -97,7 +97,7 @@ public class ResponsavelDao {
 	
 	public Responsavel pesquisarPorId(int id) {
 		Responsavel responsavel = new Responsavel();
-		String query = "SELECT * FROM responsavel WHERE Id = ?";
+		String query = "SELECT * FROM responsavel WHERE id = ?";
 		try {
 			Connection con = getConexao();
 			PreparedStatement pst = con.prepareStatement(query);

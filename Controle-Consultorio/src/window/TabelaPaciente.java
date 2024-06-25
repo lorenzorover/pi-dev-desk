@@ -30,9 +30,11 @@ import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.MaskFormatter;
 
+import dao.ConsultaDao;
 import dao.EnderecoDao;
 import dao.PacienteDao;
 import dao.ResponsavelDao;
+import entidades.Consulta;
 import entidades.Endereco;
 import entidades.Paciente;
 import entidades.Responsavel;
@@ -53,6 +55,7 @@ public class TabelaPaciente extends JFrame {
 	private JButton btnNewButton_3;
 
 	private List<Paciente> lista = new ArrayList<>();
+	private List<Consulta> listaConsulta = new ArrayList<>();
 	private PacienteDao pacienteDao = new PacienteDao();
 	private MaskFormatter mascaraData;
 	private MaskFormatter mascaraCpf;
@@ -60,6 +63,7 @@ public class TabelaPaciente extends JFrame {
 
 	private EnderecoDao enderecoDao;
 	private ResponsavelDao responsavelDao;
+	private ConsultaDao consultaDao;
 
 	/**
 	 * Launch the application.
@@ -100,6 +104,7 @@ public class TabelaPaciente extends JFrame {
 		table.getTableHeader().setReorderingAllowed(false);
 
 		scrollPane = new JScrollPane();
+		scrollPane.setEnabled(false);
 		scrollPane.setBounds(10, 43, 655, 191);
 		panel.add(scrollPane);
 
@@ -575,6 +580,25 @@ public class TabelaPaciente extends JFrame {
 
 		if (resultado == JOptionPane.OK_OPTION) {
 			paciente.setDeletado(true);
+			
+			
+			//Se a pessoa criou algum paciente errado e quer excluir
+			
+			boolean possuiConsulta = false;
+			listaConsulta = consultaDao.listaDeConsultas();
+			
+			for (Consulta consulta : listaConsulta) {
+				if (possuiConsulta = consulta.getPaciente().getId() == paciente.getId()) {
+					possuiConsulta = true;
+					break;
+				} else {
+					possuiConsulta = false;
+				}
+			}
+			
+			if (paciente.isDeletado() == true && possuiConsulta == false) {
+				pacienteDao.deletarPaciente(paciente.getId());
+			}
 		}
 
 		atualizarTabela();

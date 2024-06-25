@@ -103,7 +103,7 @@ public class ProdutoDao {
 	
 	public Produto pesquisarPorId(int id) {
 		Produto produto = new Produto();
-		String query = "SELECT * FROM produto WHERE Id = ?";
+		String query = "SELECT * FROM produto WHERE id = ?";
 		try {
 			Connection con = getConexao();
 			PreparedStatement pst = con.prepareStatement(query);

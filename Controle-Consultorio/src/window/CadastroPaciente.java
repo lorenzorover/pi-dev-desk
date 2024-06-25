@@ -329,8 +329,8 @@ public class CadastroPaciente extends JFrame {
 		btnSalvar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				boolean possuiResponsavel = false;
-				Responsavel responsavel = new Responsavel(null, 0, 0, null);
-				Endereco endereco = new Endereco(0, null, null, null, null, 0);
+				Responsavel responsavel = new Responsavel();
+				Endereco endereco = new Endereco();
 				
 				if (chckbxResponsavel.isSelected()) {
 					cadastrarResponsavel(responsavel);

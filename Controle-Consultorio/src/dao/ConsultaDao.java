@@ -118,7 +118,7 @@ public class ConsultaDao {
 	
 	public Consulta pesquisarPorId(int id) {
 		Consulta consulta = new Consulta();
-		String query = "SELECT * FROM consulta WHERE Id = ?";
+		String query = "SELECT * FROM consulta WHERE id = ?";
 		try {
 			Connection con = getConexao();
 			PreparedStatement pst = con.prepareStatement(query);

@@ -87,7 +87,7 @@ public class EnderecoDao {
 	
 	public Endereco pesquisarPorId(int id) {
 		Endereco endereco = new Endereco();
-		String query = "SELECT * FROM endereco WHERE Id = ?";
+		String query = "SELECT * FROM endereco WHERE id = ?";
 		try {
 			Connection con = getConexao();
 			PreparedStatement pst = con.prepareStatement(query);

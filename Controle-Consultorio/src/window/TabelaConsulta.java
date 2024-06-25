@@ -5,6 +5,7 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Date;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -39,8 +40,6 @@ public class TabelaConsulta extends JFrame {
 	private JButton btnMarcarDesmarcar;
 
 	private List<Consulta> listaConsulta = new ArrayList<>();
-	private List<Paciente> listaPaciente = new ArrayList<>();
-	private List<Tratamento> listaTratamento = new ArrayList<>();
 	private ConsultaDao consultaDao;
 	private PacienteDao pacienteDao;
 	private TratamentoDao tratamentoDao;
@@ -227,44 +226,6 @@ public class TabelaConsulta extends JFrame {
 			consultaDao.deletarConsulta(consulta.getId());
 		}
 
-		listaConsulta = consultaDao.listaDeConsultas();
-
-		// Outro meio utilizado pelo chatGPT
-
-//		Set<Integer> consultaPacienteIds = listaConsulta.stream().map(c -> c.getPaciente().getId())
-//				.collect(Collectors.toSet());
-//		Set<Integer> consultaTratamentoIds = listaConsulta.stream().map(c -> c.getTratamento().getId())
-//				.collect(Collectors.toSet());
-//
-//		for (Paciente paciente : listaPaciente) {
-//			if (paciente.isDeletado() && !consultaPacienteIds.contains(paciente.getId())) {
-//				pacienteDao.deletarPaciente(paciente.getId());
-//			}
-//		}
-//
-//		for (Tratamento tratamento : listaTratamento) {
-//			if (tratamento.isDeletado() && !consultaTratamentoIds.contains(tratamento.getId())) {
-//				tratamentoDao.deletarTratamento(tratamento.getId());
-//			}
-//		}
-
-		for (Consulta consulta1 : listaConsulta) {
-			int pacienteId = consulta.getPaciente().getId();
-			int tratamentoId = consulta.getTratamento().getId();
-
-			for (Paciente paciente : listaPaciente) {
-				if (paciente.isDeletado() == true && pacienteId != paciente.getId()) {
-					pacienteDao.deletarPaciente(paciente.getId());
-				}
-			}
-
-			for (Tratamento tratamento : listaTratamento) {
-				if (tratamento.isDeletado() == true && tratamentoId != tratamento.getId()) {
-					tratamentoDao.deletarTratamento(tratamento.getId());
-				}
-			}
-		}
-
 		atualizarTabela();
 	}
 
@@ -284,12 +245,13 @@ public class TabelaConsulta extends JFrame {
 			long timeStampLong = Long.parseLong(timeStamp);
 			LocalDateTime dataHora = LocalDateTime.ofInstant(Instant.ofEpochSecond(timeStampLong),
 					ZoneId.systemDefault());
+			
 			LocalDateTime dataHoraSemSegundos = dataHora.withSecond(0).withNano(0);
 
 			if (agoraSemSegundos.isBefore(dataHoraSemSegundos)) {
 
-				String data = dataHora.toLocalDate().toString();
-				String hora = dataHora.toLocalTime().toString();
+				String data = dataHoraSemSegundos.toLocalDate().toString();
+				String hora = dataHoraSemSegundos.toLocalTime().toString();
 				String comparecimento = consulta.isComparecimento() ? "Comparecido" : "Faltou";
 
 				Paciente paciente = pacienteDao.pesquisarPorId(consulta.getPaciente().getId());
@@ -321,8 +283,8 @@ public class TabelaConsulta extends JFrame {
 
 			if (agoraSemSegundos.isAfter(dataHoraSemSegundos)) {
 
-				String data = dataHora.toLocalDate().toString();
-				String hora = dataHora.toLocalTime().toString();
+				String data = dataHoraSemSegundos.toLocalDate().toString();
+				String hora = dataHoraSemSegundos.toLocalTime().toString();
 				String comparecimento = consulta.isComparecimento() ? "Comparecido" : "Faltou";
 
 				Paciente paciente = pacienteDao.pesquisarPorId(consulta.getPaciente().getId());

@@ -83,6 +83,7 @@ public class Principal {
 		frame.getContentPane().add(btnNewButton_1);
 		
 		JButton btnNewButton_2 = new JButton("Estoque");
+		btnNewButton_2.setEnabled(false);
 		btnNewButton_2.setBounds(10, 227, 121, 23);
 		frame.getContentPane().add(btnNewButton_2);
 		
