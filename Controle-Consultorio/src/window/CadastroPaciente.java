@@ -371,11 +371,10 @@ public class CadastroPaciente extends JFrame {
 	
 	public void cadastrarPaciente(Responsavel responsavel, Endereco endereco) {
 		String data = ftfDataNasc.getText();
-		LocalDate dataFormatada = LocalDate.parse(data, dataFormatar);
-
+		
 		String nomePaciente = tfNomePaciente.getText();
 		int cpfPaciente = Integer.parseInt(ftfCpfPaciente.getText()); 
-		Date dataNasc = Date.valueOf(dataFormatada);
+		Date dataNasc = Date.valueOf(data);
 		int telefonePaciente = Integer.parseInt(tfTelefonePaciente.getText());
 		String emailPaciente = tfEmailPaciente.getText();
 
