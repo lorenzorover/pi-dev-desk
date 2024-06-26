@@ -44,7 +44,7 @@ public class TabelaConsulta extends JFrame {
 	private PacienteDao pacienteDao;
 	private TratamentoDao tratamentoDao;
 
-	DateTimeFormatter formatar = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+	DateTimeFormatter formatarData = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
 	/**
 	 * Launch the application.

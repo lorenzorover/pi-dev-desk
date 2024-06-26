@@ -5,7 +5,11 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Date;
+import java.sql.Time;
 import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -40,14 +44,13 @@ public class CadastroConsulta extends JFrame {
 	private JTextField tfDescricao;
 	private JComboBox cbPaciente;
 	private JComboBox cbTratamento;
-	private JFormattedTextField ftfData;
 	private JFormattedTextField ftfHora;
+	private JFormattedTextField ftfData1;
 	
 	private MaskFormatter mascaraData;
 	private MaskFormatter mascaraHora;
-	private DateTimeFormatter dataFormatar = DateTimeFormatter.ofPattern("dd/mm/yyyy");
-	private DateTimeFormatter horaFormatar = DateTimeFormatter.ofPattern("HH:mm");
-	
+	private SimpleDateFormat formatarDataHora = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+
 	private DefaultComboBoxModel<Paciente> modeloPaciente;
 	private DefaultComboBoxModel<Tratamento> modeloTratamento;
 	
@@ -124,16 +127,6 @@ public class CadastroConsulta extends JFrame {
 		
 		try {
             mascaraData = new MaskFormatter("##/##/####");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
-        }
-		
-		JFormattedTextField ftfData = new JFormattedTextField(mascaraData);
-		ftfData.setBounds(139, 40, 117, 20);
-		panel.add(ftfData);
-		
-		try {
             mascaraHora = new MaskFormatter("##:##");
         } catch (Exception e) {
             e.printStackTrace();
@@ -177,6 +170,10 @@ public class CadastroConsulta extends JFrame {
 		lblNewLabel_5.setBounds(78, 173, 51, 15);
 		panel.add(lblNewLabel_5);
 		
+		JFormattedTextField ftfData1 = new JFormattedTextField(mascaraData);
+		ftfData1.setBounds(139, 40, 79, 20);
+		panel.add(ftfData1);
+		
 		//DateTime localDateTime = LocalDateTime.of(localDate, localTime);
 		
 		
@@ -201,14 +198,21 @@ public class CadastroConsulta extends JFrame {
 	}
 	
 	public void cadastrarConsulta() {
-		String data = ftfData.getText();
-		LocalDate dataFormatada = LocalDate.parse(data, dataFormatar);
-		String hora = ftfHora.getText();
-		LocalTime horaFormatada = LocalTime.parse(hora, horaFormatar);
+		String dataString = ftfData1.getText();
+		Date data = Date.valueOf(dataString);
+		String horaString = ftfHora.getText();
+		Time hora = Time.valueOf(horaString);
 		
-		LocalDateTime localDataHora = LocalDateTime.of(dataFormatada, horaFormatada);
-		Instant instant = localDataHora.atZone(java.time.ZoneId.systemDefault()).toInstant();
-		Timestamp dataHora = Timestamp.from(instant);
+		Timestamp timeStamp = new Timestamp(data.getTime() + hora.getTime());
+		String timeStampString = formatarDataHora.format(timeStamp);
+		java.util.Date dataHoraJava = null;
+		try {
+			dataHoraJava = formatarDataHora.parse(timeStampString);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		
+		Timestamp dataHora = new java.sql.Timestamp(dataHoraJava.getTime());
 		
 		String descricao = tfDescricao.getText();
 		Paciente paciente = (Paciente) cbPaciente.getSelectedItem();
@@ -217,6 +221,4 @@ public class CadastroConsulta extends JFrame {
 		Consulta consulta = new Consulta(dataHora, descricao, false, paciente, tratamento);
 		consultaDao.cadastrarConsulta(consulta);
 	}
-	
-	
 }
