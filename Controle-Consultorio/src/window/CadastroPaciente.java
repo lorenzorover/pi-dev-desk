@@ -325,15 +325,18 @@ public class CadastroPaciente extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				Responsavel responsavel = new Responsavel(null, 0, 0, null);
 				Endereco endereco = new Endereco(0, null, null, null, null, 0);
+				int responsavelId = 0;
+				int enderecoId = 0;
 				
 				if (chckbxResponsavel.isSelected()) {
-					cadastrarResponsavel(responsavel);
+					responsavelId = cadastrarResponsavel(responsavel);
 				} else {
 					responsavelDao.cadastrarResponsavel(responsavel); // Cadastra o dao com valores nulos. Mudar no sql para receber valores nulos futuramente
 				};
 				
-				cadastrarEndereco(endereco);
-				cadastrarPaciente(responsavel, endereco);
+				enderecoId = cadastrarEndereco(endereco);
+				
+				cadastrarPaciente(responsavelId, enderecoId);
 			}
 		});
 		btnSalvar.setBounds(287, 258, 89, 23);
@@ -341,7 +344,7 @@ public class CadastroPaciente extends JFrame {
 		
 	}
 	
-	public void cadastrarResponsavel(Responsavel responsavel) {
+	public int cadastrarResponsavel(Responsavel responsavel) {
 		String cpfFormatado = ftfCpfResponsavel.getText().replace(".", "").replace("-", "");
 		String telefoneFormatado = ftfTelefoneResponsavel.getText().replace("(", "").replace(")", "").replace("-", "").replace(" ", "");
 		
@@ -352,9 +355,11 @@ public class CadastroPaciente extends JFrame {
 		
 		responsavel = new Responsavel(nomeResponsavel, cpfResponsavel, telefoneResponsavel, emailResponsavel);
 		responsavelDao.cadastrarResponsavel(responsavel);
+		
+		return responsavelDao.cadastrarResponsavel(responsavel); //Retorna o Id
 	}
 	
-	public void cadastrarEndereco(Endereco endereco) {
+	public int cadastrarEndereco(Endereco endereco) {
 		String cepFormatado = ftfCep.getText().replace("-", "");
 		
 		int cep = Integer.valueOf(cepFormatado);
@@ -366,9 +371,11 @@ public class CadastroPaciente extends JFrame {
 		
 		endereco = new Endereco(cep, rua, bairro, uf, cidade, numero);
 		enderecoDao.cadastrarEndereco(endereco);
+		
+		return enderecoDao.cadastrarEndereco(endereco); //Retorna o Id
 	}
 	
-	public void cadastrarPaciente(Responsavel responsavel, Endereco endereco) {
+	public void cadastrarPaciente(int responsavelId, int enderecoId) {
 		String dataString = ftfDataNasc.getText();
 		SimpleDateFormat formatarData = new SimpleDateFormat("dd/MM/yyyy");
 		
@@ -387,9 +394,9 @@ public class CadastroPaciente extends JFrame {
 		int cpfPaciente = Integer.valueOf(cpfFormatado);
 		int telefonePaciente = Integer.valueOf(telefoneFormatado);
 		String emailPaciente = tfEmailPaciente.getText();
-
-		endereco = enderecoDao.pesquisarPorId(endereco.getId());
-		responsavel = responsavelDao.pesquisarPorId(responsavel.getId());
+		
+		Responsavel responsavel = responsavelDao.pesquisarPorId(responsavelId);
+		Endereco endereco = enderecoDao.pesquisarPorId(enderecoId);
 		
 		Paciente paciente = new Paciente(nomePaciente, cpfPaciente, dataNasc, telefonePaciente, emailPaciente, endereco, responsavel, false);
 		pacienteDao.cadastrarPaciente(paciente);

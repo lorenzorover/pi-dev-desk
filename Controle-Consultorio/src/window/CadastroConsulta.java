@@ -1,6 +1,7 @@
 package window;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -10,20 +11,17 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -35,6 +33,7 @@ import dao.PacienteDao;
 import dao.TratamentoDao;
 import entidades.Consulta;
 import entidades.Paciente;
+import entidades.Responsavel;
 import entidades.Tratamento;
 
 public class CadastroConsulta extends JFrame {
@@ -115,10 +114,10 @@ public class CadastroConsulta extends JFrame {
 		lblNewLabel_2.setBounds(104, 73, 25, 15);
 		panel.add(lblNewLabel_2);
 		
-		JComboBox cbPaciente = new JComboBox();
+		JComboBox cbPaciente = new JComboBox<>();
 		cbPaciente.setBounds(139, 102, 152, 22);
 		panel.add(cbPaciente);
-		inserirCBPaciente(cbPaciente);
+		carregarPacientes();
 		
 		JComboBox cbTratamento = new JComboBox();
 		cbTratamento.setBounds(139, 135, 152, 22);
@@ -187,6 +186,30 @@ public class CadastroConsulta extends JFrame {
 			modeloPaciente.addElement(paciente);
 		}
 	}
+	
+	private void carregarPacientes() {
+        List<Paciente> pacientes = pacienteDao.listaDePacientes();
+
+        cbPaciente.removeAllItems();
+
+        for (Paciente paciente : pacientes) {
+            cbPaciente.addItem(paciente);
+        }
+
+       //Renderizador para retornar apenas o que deseja, caso contrário retornará o toString automaticamente
+//        cbPaciente.setRenderer(new ResponsavelRenderer());
+    }
+	
+//	private class PacienteRenderer extends DefaultListCellRenderer {
+//        @Override
+//        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+//            if (value instanceof Paciente) {
+//                Paciente paciente = (Paciente) value;
+//                setText(paciente.getNome());
+//            }
+//            return this;
+//        }
+//    }
 	
 	public void inserirCBTratamento(JComboBox<Tratamento> cbTratamento) {
 		modeloTratamento = (DefaultComboBoxModel<Tratamento>) cbTratamento.getModel();
