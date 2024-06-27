@@ -22,6 +22,7 @@ import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -41,23 +42,19 @@ public class CadastroConsulta extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JTextField tfDescricao;
-	private JComboBox cbPaciente;
-	private JComboBox cbTratamento;
+	private JComboBox<Paciente> cbPaciente;
+	private JComboBox<Tratamento> cbTratamento;
 	private JFormattedTextField ftfHora;
 	private JFormattedTextField ftfData1;
 	
 	private MaskFormatter mascaraData;
 	private MaskFormatter mascaraHora;
 	private SimpleDateFormat formatarDataHora = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-
-	private DefaultComboBoxModel<Paciente> modeloPaciente;
-	private DefaultComboBoxModel<Tratamento> modeloTratamento;
 	
 	private PacienteDao pacienteDao;
 	private TratamentoDao tratamentoDao;
 	private ConsultaDao consultaDao;
-	private List<Paciente> listaPaciente = new ArrayList<>();
-	private List<Tratamento> listaTratamento = new ArrayList<>();
+	
 
 	/**
 	 * Launch the application.
@@ -114,15 +111,21 @@ public class CadastroConsulta extends JFrame {
 		lblNewLabel_2.setBounds(104, 73, 25, 15);
 		panel.add(lblNewLabel_2);
 		
-		JComboBox cbPaciente = new JComboBox<>();
+		List<Paciente> pacientes = pacienteDao.listaDePacientes();
+		JComboBox<Paciente> cbPaciente = new JComboBox<>();
 		cbPaciente.setBounds(139, 102, 152, 22);
 		panel.add(cbPaciente);
-		carregarPacientes();
+		for (Paciente paciente : pacientes) {
+            cbPaciente.addItem(paciente);
+        }
 		
-		JComboBox cbTratamento = new JComboBox();
+		List<Tratamento> tratamentos = tratamentoDao.listaDeTratamentos();
+		JComboBox<Tratamento> cbTratamento = new JComboBox<>();
 		cbTratamento.setBounds(139, 135, 152, 22);
 		panel.add(cbTratamento);
-		inserirCBTratamento(cbTratamento);
+		for (Tratamento tratamento : tratamentos) {
+			cbTratamento.addItem(tratamento);
+		}
 		
 		try {
             mascaraData = new MaskFormatter("##/##/####");
@@ -173,61 +176,18 @@ public class CadastroConsulta extends JFrame {
 		ftfData1.setBounds(139, 40, 79, 20);
 		panel.add(ftfData1);
 		
-		//DateTime localDateTime = LocalDateTime.of(localDate, localTime);
 		
-		
-	}
-	
-	public void inserirCBPaciente(JComboBox<Paciente> cbPaciente) {
-		modeloPaciente = (DefaultComboBoxModel<Paciente>) cbPaciente.getModel();
-		
-		listaPaciente = pacienteDao.listaDePacientes();
-		for (Paciente paciente : listaPaciente) {
-			modeloPaciente.addElement(paciente);
-		}
-	}
-	
-	private void carregarPacientes() {
-        List<Paciente> pacientes = pacienteDao.listaDePacientes();
-
-        cbPaciente.removeAllItems();
-
-        for (Paciente paciente : pacientes) {
-            cbPaciente.addItem(paciente);
-        }
-
-       //Renderizador para retornar apenas o que deseja, caso contrário retornará o toString automaticamente
-//        cbPaciente.setRenderer(new ResponsavelRenderer());
-    }
-	
-//	private class PacienteRenderer extends DefaultListCellRenderer {
-//        @Override
-//        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-//            if (value instanceof Paciente) {
-//                Paciente paciente = (Paciente) value;
-//                setText(paciente.getNome());
-//            }
-//            return this;
-//        }
-//    }
-	
-	public void inserirCBTratamento(JComboBox<Tratamento> cbTratamento) {
-		modeloTratamento = (DefaultComboBoxModel<Tratamento>) cbTratamento.getModel();
-		
-		listaTratamento = tratamentoDao.listaDeTratamentos();
-		for (Tratamento tratamento : listaTratamento) {
-			modeloTratamento.addElement(tratamento);
-		}
 	}
 	
 	public void cadastrarConsulta() {
 		String dataString = ftfData1.getText();
-		Date data = Date.valueOf(dataString);
 		String horaString = ftfHora.getText();
-		Time hora = Time.valueOf(horaString);
 		
-		Timestamp timeStamp = new Timestamp(data.getTime() + hora.getTime());
+		Timestamp timeStamp = Timestamp.valueOf(dataString + " " + horaString);
+		
 		String timeStampString = formatarDataHora.format(timeStamp);
+		
+		
 		java.util.Date dataHoraJava = null;
 		try {
 			dataHoraJava = formatarDataHora.parse(timeStampString);
@@ -238,10 +198,28 @@ public class CadastroConsulta extends JFrame {
 		java.sql.Timestamp dataHora = new java.sql.Timestamp(dataHoraJava.getTime());
 		
 		String descricao = tfDescricao.getText();
-		Paciente paciente = (Paciente) cbPaciente.getSelectedItem();
-		Tratamento tratamento = (Tratamento) cbTratamento.getSelectedItem();
+		Paciente pacienteSelecionado = (Paciente) cbPaciente.getSelectedItem();
+		Tratamento tratamentoSelecionado = (Tratamento) cbTratamento.getSelectedItem();
+		
+		if (pacienteSelecionado == null || tratamentoSelecionado == null) {
+	        JOptionPane.showMessageDialog(null, "Selecione um paciente e um tratamento.");
+	        return;
+	    }
+		
+		Paciente paciente = pacienteDao.pesquisarPorId(pacienteSelecionado.getId());
+		Tratamento tratamento = tratamentoDao.pesquisarPorId(tratamentoSelecionado.getId());
 		
 		Consulta consulta = new Consulta(dataHora, descricao, false, paciente, tratamento);
-		consultaDao.cadastrarConsulta(consulta);
+		
+		try {
+			consultaDao.cadastrarConsulta(consulta);
+			JOptionPane.showMessageDialog(null, "Cadastro realizado com sucesso.", "Cadastro", JOptionPane.OK_OPTION);
+			this.dispose();
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        JOptionPane.showMessageDialog(null, "Ocorreu um erro ao tentar cadastrar a consulta");
+	        return;
+	    }
+		
 	}
 }

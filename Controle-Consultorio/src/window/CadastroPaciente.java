@@ -14,6 +14,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
@@ -122,7 +123,7 @@ public class CadastroPaciente extends JFrame {
             return;
         }
 		
-		ftfCep = new JFormattedTextField(           );
+		ftfCep = new JFormattedTextField(mascaraCep           );
 		ftfCep.setBounds(105, 46, 117, 20);
 		pEndereco.add(ftfCep);
 		ftfCep.setColumns(10);
@@ -208,12 +209,12 @@ public class CadastroPaciente extends JFrame {
 		lblNewLabel_5.setBounds(11, 125, 63, 30);
 		pPaciente.add(lblNewLabel_5);
 		
-		ftfDataNasc = new JFormattedTextField(mascaraData);
+		ftfDataNasc = new JFormattedTextField(mascaraData       );
 		ftfDataNasc.setColumns(10);
 		ftfDataNasc.setBounds(98, 128, 86, 20);
 		pPaciente.add(ftfDataNasc);
 		
-		ftfTelefonePaciente = new JFormattedTextField(         );
+		ftfTelefonePaciente = new JFormattedTextField(mascaraTelefone         );
 		ftfTelefonePaciente.setColumns(10);
 		ftfTelefonePaciente.setBounds(98, 159, 86, 20);
 		pPaciente.add(ftfTelefonePaciente);
@@ -239,7 +240,7 @@ public class CadastroPaciente extends JFrame {
 		chckbxResponsavel.setBounds(95, 217, 131, 23);
 		pPaciente.add(chckbxResponsavel);
 		
-		ftfCpfPaciente = new JFormattedTextField(          );
+		ftfCpfPaciente = new JFormattedTextField(mascaraCpf          );
 		ftfCpfPaciente.setBounds(98, 97, 128, 20);
 		pPaciente.add(ftfCpfPaciente);
 		
@@ -266,12 +267,12 @@ public class CadastroPaciente extends JFrame {
 		tfNomeResponsavel.setBounds(101, 52, 202, 20);
 		pResponsavel.add(tfNomeResponsavel);
 		
-		ftfCpfResponsavel = new JFormattedTextField(      );
+		ftfCpfResponsavel = new JFormattedTextField(mascaraCpf      );
 		ftfCpfResponsavel.setColumns(10);
 		ftfCpfResponsavel.setBounds(101, 83, 86, 20);
 		pResponsavel.add(ftfCpfResponsavel);
 		
-		ftfTelefoneResponsavel = new JFormattedTextField(         );
+		ftfTelefoneResponsavel = new JFormattedTextField(mascaraTelefone         );
 		ftfTelefoneResponsavel.setColumns(10);
 		ftfTelefoneResponsavel.setBounds(101, 114, 86, 20);
 		pResponsavel.add(ftfTelefoneResponsavel);
@@ -399,6 +400,15 @@ public class CadastroPaciente extends JFrame {
 		Endereco endereco = enderecoDao.pesquisarPorId(enderecoId);
 		
 		Paciente paciente = new Paciente(nomePaciente, cpfPaciente, dataNasc, telefonePaciente, emailPaciente, endereco, responsavel, false);
-		pacienteDao.cadastrarPaciente(paciente);
+		
+		try {
+			pacienteDao.cadastrarPaciente(paciente);
+			JOptionPane.showMessageDialog(null, "Cadastro realizado com sucesso.", "Cadastro", JOptionPane.OK_OPTION);
+			this.dispose();
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        JOptionPane.showMessageDialog(null, "Ocorreu um erro ao tentar cadastrar o paciente");
+	        return;
+	    }
 	}
 }
