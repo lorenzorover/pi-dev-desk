@@ -46,8 +46,6 @@ public class CadastroPaciente extends JFrame {
 	private JTextField tfEmailResponsavel;
 	private JFormattedTextField ftfCpfPaciente;
 	
-	private SimpleDateFormat formatarData = new SimpleDateFormat("dd/MM/yyyy");
-	
 	private MaskFormatter mascaraCpf;
 	private MaskFormatter mascaraData;
 	private MaskFormatter mascaraTelefone;
@@ -124,7 +122,7 @@ public class CadastroPaciente extends JFrame {
             return;
         }
 		
-		ftfCep = new JFormattedTextField(mascaraCep);
+		ftfCep = new JFormattedTextField(           );
 		ftfCep.setBounds(105, 46, 117, 20);
 		pEndereco.add(ftfCep);
 		ftfCep.setColumns(10);
@@ -201,7 +199,6 @@ public class CadastroPaciente extends JFrame {
 		pPaciente.add(lblNewLabel_2);
 		
 		JLabel lblNewLabel_3 = new JLabel("CPF");
-		lblNewLabel_3.setToolTipText("");
 		lblNewLabel_3.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		lblNewLabel_3.setBounds(52, 99, 20, 15);
 		pPaciente.add(lblNewLabel_3);
@@ -216,7 +213,7 @@ public class CadastroPaciente extends JFrame {
 		ftfDataNasc.setBounds(98, 128, 86, 20);
 		pPaciente.add(ftfDataNasc);
 		
-		ftfTelefonePaciente = new JFormattedTextField(mascaraTelefone);
+		ftfTelefonePaciente = new JFormattedTextField(         );
 		ftfTelefonePaciente.setColumns(10);
 		ftfTelefonePaciente.setBounds(98, 159, 86, 20);
 		pPaciente.add(ftfTelefonePaciente);
@@ -242,7 +239,7 @@ public class CadastroPaciente extends JFrame {
 		chckbxResponsavel.setBounds(95, 217, 131, 23);
 		pPaciente.add(chckbxResponsavel);
 		
-		ftfCpfPaciente = new JFormattedTextField(mascaraCpf);
+		ftfCpfPaciente = new JFormattedTextField(          );
 		ftfCpfPaciente.setBounds(98, 97, 128, 20);
 		pPaciente.add(ftfCpfPaciente);
 		
@@ -269,12 +266,12 @@ public class CadastroPaciente extends JFrame {
 		tfNomeResponsavel.setBounds(101, 52, 202, 20);
 		pResponsavel.add(tfNomeResponsavel);
 		
-		ftfCpfResponsavel = new JFormattedTextField(mascaraCpf);
+		ftfCpfResponsavel = new JFormattedTextField(      );
 		ftfCpfResponsavel.setColumns(10);
 		ftfCpfResponsavel.setBounds(101, 83, 86, 20);
 		pResponsavel.add(ftfCpfResponsavel);
 		
-		ftfTelefoneResponsavel = new JFormattedTextField(mascaraTelefone);
+		ftfTelefoneResponsavel = new JFormattedTextField(         );
 		ftfTelefoneResponsavel.setColumns(10);
 		ftfTelefoneResponsavel.setBounds(101, 114, 86, 20);
 		pResponsavel.add(ftfTelefoneResponsavel);
@@ -326,14 +323,14 @@ public class CadastroPaciente extends JFrame {
 		JButton btnSalvar = new JButton("Salvar");
 		btnSalvar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Responsavel responsavel = new Responsavel();
-				Endereco endereco = new Endereco();
+				Responsavel responsavel = new Responsavel(null, 0, 0, null);
+				Endereco endereco = new Endereco(0, null, null, null, null, 0);
 				
 				if (chckbxResponsavel.isSelected()) {
 					cadastrarResponsavel(responsavel);
 				} else {
-					responsavel = null;
-				}
+					responsavelDao.cadastrarResponsavel(responsavel); // Cadastra o dao com valores nulos. Mudar no sql para receber valores nulos futuramente
+				};
 				
 				cadastrarEndereco(endereco);
 				cadastrarPaciente(responsavel, endereco);
@@ -373,23 +370,27 @@ public class CadastroPaciente extends JFrame {
 	
 	public void cadastrarPaciente(Responsavel responsavel, Endereco endereco) {
 		String dataString = ftfDataNasc.getText();
-		Date dataFormatada = null;
+		SimpleDateFormat formatarData = new SimpleDateFormat("dd/MM/yyyy");
+		
+		java.util.Date utilDate = null;
 		try {
-			dataFormatada = (Date) formatarData.parse(dataString);
+			utilDate = formatarData.parse(dataString);
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		java.sql.Date dataSql = new java.sql.Date(dataFormatada.getTime());
+		java.sql.Date dataNasc = new java.sql.Date(utilDate.getTime());
 		
 		String cpfFormatado = ftfCpfPaciente.getText().replace(".", "").replace("-", "");
 		String telefoneFormatado = ftfTelefonePaciente.getText().replace("(", "").replace(")", "").replace("-", "").replace(" ", "");
 		
 		String nomePaciente = tfNomePaciente.getText();
 		int cpfPaciente = Integer.valueOf(cpfFormatado);
-		Date dataNasc = dataSql;
 		int telefonePaciente = Integer.valueOf(telefoneFormatado);
 		String emailPaciente = tfEmailPaciente.getText();
 
+		endereco = enderecoDao.pesquisarPorId(endereco.getId());
+		responsavel = responsavelDao.pesquisarPorId(responsavel.getId());
+		
 		Paciente paciente = new Paciente(nomePaciente, cpfPaciente, dataNasc, telefonePaciente, emailPaciente, endereco, responsavel, false);
 		pacienteDao.cadastrarPaciente(paciente);
 	}

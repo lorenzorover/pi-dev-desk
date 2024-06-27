@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,13 +30,13 @@ public class EnderecoDao {
 		return conn;
 	}
 
-	public void cadastrarEndereco(Endereco endereco) {
+	public int cadastrarEndereco(Endereco endereco) {
 
 		String insert = "INSERT INTO endereco(cep,rua,bairro,uf,cidade,numero) VALUES(?,?,?,?,?,?)";
 
 		try {
 			Connection conn = getConexao();
-			PreparedStatement pst = conn.prepareStatement(insert);
+			PreparedStatement pst = conn.prepareStatement(insert, Statement.RETURN_GENERATED_KEYS);
 			
 			pst.setInt(1, endereco.getCep());
 			pst.setString(2, endereco.getRua());
@@ -45,14 +46,24 @@ public class EnderecoDao {
 			pst.setInt(6, endereco.getNumero());
 
 			pst.executeUpdate();
-
+			
+			ResultSet rs = pst.getGeneratedKeys();
+			int chaveGerada;
+			if (rs.next() == true) {
+				chaveGerada = rs.getInt(1);
+				return chaveGerada;
+			}
+			
+			rs.close();
 			pst.close();
 			conn.close();
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
+		
+		return 0;
+		
 	}
 
 	public List<Endereco> listaDeEnderecos() {

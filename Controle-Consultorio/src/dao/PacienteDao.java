@@ -40,7 +40,7 @@ public class PacienteDao {
 
 	public int cadastrarPaciente(Paciente paciente) {
 
-		String insert = "INSERT INTO responsavel(nome,cpf,data_nasc,telefone,email,endereco_id,responsavel_id,deletado) VALUES(?,?,?,?,?,?,?,?)";
+		String insert = "INSERT INTO paciente(nome,cpf,data_nasc,telefone,email,endereco_id,responsavel_id,deletado) VALUES(?,?,?,?,?,?,?,?)";
 
 		try {
 			Connection conn = getConexao();

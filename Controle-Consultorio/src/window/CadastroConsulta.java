@@ -212,7 +212,7 @@ public class CadastroConsulta extends JFrame {
 			e.printStackTrace();
 		}
 		
-		Timestamp dataHora = new java.sql.Timestamp(dataHoraJava.getTime());
+		java.sql.Timestamp dataHora = new java.sql.Timestamp(dataHoraJava.getTime());
 		
 		String descricao = tfDescricao.getText();
 		Paciente paciente = (Paciente) cbPaciente.getSelectedItem();

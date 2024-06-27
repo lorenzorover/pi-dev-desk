@@ -99,9 +99,9 @@ public class TabelaPaciente extends JFrame {
 		contentPane.add(panel);
 		panel.setLayout(null);
 
-		table.setDefaultEditor(Object.class, null);
-
-		table.getTableHeader().setReorderingAllowed(false);
+//		table.setDefaultEditor(Object.class, null);
+//
+//		table.getTableHeader().setReorderingAllowed(false);
 
 		scrollPane = new JScrollPane();
 		scrollPane.setEnabled(false);
@@ -171,7 +171,7 @@ public class TabelaPaciente extends JFrame {
 				String opcao = null;
 				paciente = (Paciente) selecionarLinhaPorId(paciente);
 
-				if (paciente != null) {
+				if (paciente.getNome() != null) {
 					String opcaoRetornada = selecionarOpcaoEditar(opcao, paciente);
 					if (opcaoRetornada.equals("paciente")) {
 						editarPaciente(paciente);
