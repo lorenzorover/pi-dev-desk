@@ -7,6 +7,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Date;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -56,14 +57,14 @@ public class TabelaPaciente extends JFrame {
 
 	private List<Paciente> lista = new ArrayList<>();
 	private List<Consulta> listaConsulta = new ArrayList<>();
-	private PacienteDao pacienteDao = new PacienteDao();
 	private MaskFormatter mascaraData;
 	private MaskFormatter mascaraCpf;
 	private DateTimeFormatter dataFormatar = DateTimeFormatter.ofPattern("dd/mm/yyyy");
 
-	private EnderecoDao enderecoDao;
-	private ResponsavelDao responsavelDao;
-	private ConsultaDao consultaDao;
+	private PacienteDao pacienteDao = new PacienteDao();
+	private EnderecoDao enderecoDao = new EnderecoDao();
+	private ResponsavelDao responsavelDao = new ResponsavelDao();
+	private ConsultaDao consultaDao = new ConsultaDao();
 
 	/**
 	 * Launch the application.
@@ -165,13 +166,11 @@ public class TabelaPaciente extends JFrame {
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
-				// Confirmar se posso instanciar um paciente zerado aqui, sendo que ele recebe
-				// outros parametros adiante
 				Paciente paciente = new Paciente();
 				String opcao = null;
 				paciente = (Paciente) selecionarLinhaPorId(paciente);
 
-				if (paciente.getNome() != null) {
+				if (paciente.getResponsavel().getNome() != null) {
 					String opcaoRetornada = selecionarOpcaoEditar(opcao, paciente);
 					if (opcaoRetornada.equals("paciente")) {
 						editarPaciente(paciente);
@@ -281,7 +280,7 @@ public class TabelaPaciente extends JFrame {
 
 	public String selecionarResponsavelOuEndereco(String opcao, Paciente paciente) {
 
-		if (paciente.getResponsavel() != null) {
+		if (paciente.getResponsavel().getNome() != null) {
 			JRadioButton responsavel = new JRadioButton("Responsável");
 			JRadioButton endereco = new JRadioButton("Endereço");
 
@@ -304,7 +303,7 @@ public class TabelaPaciente extends JFrame {
 					JOptionPane.showMessageDialog(null, "Selecione uma opção");
 				}
 			}
-		} else if (paciente.getResponsavel().equals(null)) {
+		} else if (paciente.getResponsavel().getNome() == null) {
 			return opcao = "endereco";
 		}
 		return null;
@@ -424,8 +423,8 @@ public class TabelaPaciente extends JFrame {
 
 	public void editarPaciente(Paciente paciente) {
 
-		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-		String dataFormatada = dateFormat.format(paciente.getDataNasc());
+		SimpleDateFormat formatarData = new SimpleDateFormat("dd/MM/yyyy");
+		String dataFormatada = formatarData.format(paciente.getDataNasc());
 
 		JTextField tfNome = new JTextField(paciente.getNome());
 		JFormattedTextField ftfCpf = new JFormattedTextField(mascaraCpf);
@@ -457,15 +456,21 @@ public class TabelaPaciente extends JFrame {
 
 		if (resultado == JOptionPane.OK_OPTION) {
 
-			String data = ftfDataNasc.getText();
-			LocalDate dataFormatadaEditada = LocalDate.parse(data, dataFormatar);
+			String dataString = ftfDataNasc.getText();
+			java.util.Date utilDate = null;
+			try {
+				utilDate = formatarData.parse(dataString);
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+			java.sql.Date dataNasc = new java.sql.Date(utilDate.getTime());
 
 			Responsavel responsavel = responsavelDao.pesquisarPorId(paciente.getResponsavel().getId());
 			Endereco endereco = enderecoDao.pesquisarPorId(paciente.getEndereco().getId());
 
 			String nome = tfNome.getText();
 			int cpf = Integer.parseInt(ftfCpf.getText());
-			Date dataNasc = Date.valueOf(dataFormatadaEditada);
+			
 			int telefone = Integer.parseInt(tfTelefone.getText());
 			String email = tfEmail.getText();
 

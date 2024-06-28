@@ -45,15 +45,15 @@ public class CadastroConsulta extends JFrame {
 	private JComboBox<Paciente> cbPaciente;
 	private JComboBox<Tratamento> cbTratamento;
 	private JFormattedTextField ftfHora;
-	private JFormattedTextField ftfData1;
+	private JFormattedTextField ftfData;
 	
 	private MaskFormatter mascaraData;
 	private MaskFormatter mascaraHora;
 	private SimpleDateFormat formatarDataHora = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 	
-	private PacienteDao pacienteDao;
-	private TratamentoDao tratamentoDao;
-	private ConsultaDao consultaDao;
+	private PacienteDao pacienteDao = new PacienteDao();
+	private TratamentoDao tratamentoDao = new TratamentoDao();
+	private ConsultaDao consultaDao = new ConsultaDao();
 	
 
 	/**
@@ -111,20 +111,28 @@ public class CadastroConsulta extends JFrame {
 		lblNewLabel_2.setBounds(104, 73, 25, 15);
 		panel.add(lblNewLabel_2);
 		
-		List<Paciente> pacientes = pacienteDao.listaDePacientes();
 		JComboBox<Paciente> cbPaciente = new JComboBox<>();
 		cbPaciente.setBounds(139, 102, 152, 22);
 		panel.add(cbPaciente);
+		try {
+		List<Paciente> pacientes = pacienteDao.listaDePacientes();
 		for (Paciente paciente : pacientes) {
             cbPaciente.addItem(paciente);
         }
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+		}
 		
-		List<Tratamento> tratamentos = tratamentoDao.listaDeTratamentos();
 		JComboBox<Tratamento> cbTratamento = new JComboBox<>();
 		cbTratamento.setBounds(139, 135, 152, 22);
 		panel.add(cbTratamento);
+		try {
+		List<Tratamento> tratamentos = tratamentoDao.listaDeTratamentos();
 		for (Tratamento tratamento : tratamentos) {
 			cbTratamento.addItem(tratamento);
+		}
+		} catch (NullPointerException e) {
+			e.printStackTrace();
 		}
 		
 		try {
@@ -172,21 +180,19 @@ public class CadastroConsulta extends JFrame {
 		lblNewLabel_5.setBounds(78, 173, 51, 15);
 		panel.add(lblNewLabel_5);
 		
-		JFormattedTextField ftfData1 = new JFormattedTextField(mascaraData);
-		ftfData1.setBounds(139, 40, 79, 20);
-		panel.add(ftfData1);
+		JFormattedTextField ftfData = new JFormattedTextField(mascaraData);
+		ftfData.setBounds(139, 40, 79, 20);
+		panel.add(ftfData);
 		
 		
 	}
 	
 	public void cadastrarConsulta() {
-		String dataString = ftfData1.getText();
+		String dataString = ftfData.getText();
 		String horaString = ftfHora.getText();
 		
 		Timestamp timeStamp = Timestamp.valueOf(dataString + " " + horaString);
-		
 		String timeStampString = formatarDataHora.format(timeStamp);
-		
 		
 		java.util.Date dataHoraJava = null;
 		try {
@@ -194,7 +200,6 @@ public class CadastroConsulta extends JFrame {
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		
 		java.sql.Timestamp dataHora = new java.sql.Timestamp(dataHoraJava.getTime());
 		
 		String descricao = tfDescricao.getText();
@@ -213,11 +218,11 @@ public class CadastroConsulta extends JFrame {
 		
 		try {
 			consultaDao.cadastrarConsulta(consulta);
-			JOptionPane.showMessageDialog(null, "Cadastro realizado com sucesso.", "Cadastro", JOptionPane.OK_OPTION);
+			JOptionPane.showMessageDialog(null, "Cadastro realizado com sucesso.", "Cadastro", JOptionPane.DEFAULT_OPTION);
 			this.dispose();
 	    } catch (Exception e) {
 	        e.printStackTrace();
-	        JOptionPane.showMessageDialog(null, "Ocorreu um erro ao tentar cadastrar a consulta");
+	        JOptionPane.showMessageDialog(null, "Ocorreu um erro ao tentar cadastrar a consulta", "Erro", JOptionPane.OK_OPTION);
 	        return;
 	    }
 		

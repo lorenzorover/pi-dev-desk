@@ -5,7 +5,6 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Date;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -40,9 +39,9 @@ public class TabelaConsulta extends JFrame {
 	private JButton btnMarcarDesmarcar;
 
 	private List<Consulta> listaConsulta = new ArrayList<>();
-	private ConsultaDao consultaDao;
-	private PacienteDao pacienteDao;
-	private TratamentoDao tratamentoDao;
+	private ConsultaDao consultaDao = new ConsultaDao();
+	private PacienteDao pacienteDao = new PacienteDao();
+	private TratamentoDao tratamentoDao = new TratamentoDao();
 
 	DateTimeFormatter formatarData = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
@@ -264,7 +263,7 @@ public class TabelaConsulta extends JFrame {
 	}
 
 	public void consultasPassadas() {
-
+		
 		LocalDateTime agora = LocalDateTime.now();
 		LocalDateTime agoraSemSegundos = agora.withSecond(0).withNano(0);
 

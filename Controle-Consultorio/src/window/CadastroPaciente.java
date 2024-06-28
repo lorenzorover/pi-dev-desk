@@ -123,7 +123,7 @@ public class CadastroPaciente extends JFrame {
             return;
         }
 		
-		ftfCep = new JFormattedTextField(mascaraCep           );
+		ftfCep = new JFormattedTextField(           );
 		ftfCep.setBounds(105, 46, 117, 20);
 		pEndereco.add(ftfCep);
 		ftfCep.setColumns(10);
@@ -214,7 +214,7 @@ public class CadastroPaciente extends JFrame {
 		ftfDataNasc.setBounds(98, 128, 86, 20);
 		pPaciente.add(ftfDataNasc);
 		
-		ftfTelefonePaciente = new JFormattedTextField(mascaraTelefone         );
+		ftfTelefonePaciente = new JFormattedTextField(         );
 		ftfTelefonePaciente.setColumns(10);
 		ftfTelefonePaciente.setBounds(98, 159, 86, 20);
 		pPaciente.add(ftfTelefonePaciente);
@@ -240,7 +240,7 @@ public class CadastroPaciente extends JFrame {
 		chckbxResponsavel.setBounds(95, 217, 131, 23);
 		pPaciente.add(chckbxResponsavel);
 		
-		ftfCpfPaciente = new JFormattedTextField(mascaraCpf          );
+		ftfCpfPaciente = new JFormattedTextField(          );
 		ftfCpfPaciente.setBounds(98, 97, 128, 20);
 		pPaciente.add(ftfCpfPaciente);
 		
@@ -267,12 +267,12 @@ public class CadastroPaciente extends JFrame {
 		tfNomeResponsavel.setBounds(101, 52, 202, 20);
 		pResponsavel.add(tfNomeResponsavel);
 		
-		ftfCpfResponsavel = new JFormattedTextField(mascaraCpf      );
+		ftfCpfResponsavel = new JFormattedTextField(      );
 		ftfCpfResponsavel.setColumns(10);
 		ftfCpfResponsavel.setBounds(101, 83, 86, 20);
 		pResponsavel.add(ftfCpfResponsavel);
 		
-		ftfTelefoneResponsavel = new JFormattedTextField(mascaraTelefone         );
+		ftfTelefoneResponsavel = new JFormattedTextField(         );
 		ftfTelefoneResponsavel.setColumns(10);
 		ftfTelefoneResponsavel.setBounds(101, 114, 86, 20);
 		pResponsavel.add(ftfTelefoneResponsavel);
@@ -332,7 +332,7 @@ public class CadastroPaciente extends JFrame {
 				if (chckbxResponsavel.isSelected()) {
 					responsavelId = cadastrarResponsavel(responsavel);
 				} else {
-					responsavelDao.cadastrarResponsavel(responsavel); // Cadastra o dao com valores nulos. Mudar no sql para receber valores nulos futuramente
+					responsavelId = responsavelDao.cadastrarResponsavel(responsavel); // Cadastra o dao com valores nulos
 				};
 				
 				enderecoId = cadastrarEndereco(endereco);
@@ -403,11 +403,11 @@ public class CadastroPaciente extends JFrame {
 		
 		try {
 			pacienteDao.cadastrarPaciente(paciente);
-			JOptionPane.showMessageDialog(null, "Cadastro realizado com sucesso.", "Cadastro", JOptionPane.OK_OPTION);
+			JOptionPane.showMessageDialog(null, "Cadastro realizado com sucesso.", "Cadastro", JOptionPane.DEFAULT_OPTION);
 			this.dispose();
 	    } catch (Exception e) {
 	        e.printStackTrace();
-	        JOptionPane.showMessageDialog(null, "Ocorreu um erro ao tentar cadastrar o paciente");
+	        JOptionPane.showMessageDialog(null, "Ocorreu um erro ao tentar cadastrar o paciente", "Erro", JOptionPane.OK_OPTION);
 	        return;
 	    }
 	}

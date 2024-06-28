@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -136,6 +137,16 @@ public class CadastroTratamento extends JFrame {
 		String descricao = tfDescricao.getText();
 		
 		Tratamento tratamento = new Tratamento(nome, preco, descricao, false);
-		tratamentoDao.cadastrarTratamento(tratamento);
+		
+		try {
+			tratamentoDao.cadastrarTratamento(tratamento);
+			JOptionPane.showMessageDialog(null, "Cadastro realizado com sucesso.", "Cadastro", JOptionPane.DEFAULT_OPTION);
+			this.dispose();
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        JOptionPane.showMessageDialog(null, "Ocorreu um erro ao tentar cadastrar o tratamento", "Erro", JOptionPane.OK_OPTION);
+	        return;
+	    }
+		
 	}
 }
