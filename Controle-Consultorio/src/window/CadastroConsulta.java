@@ -188,7 +188,7 @@ public class CadastroConsulta extends JFrame {
 	
 	public void cadastrarConsulta() {
 		SimpleDateFormat formatarDataHoraEntrada = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-		SimpleDateFormat formatoTimestamp = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+		SimpleDateFormat formatoTimestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 		String dataString = ftfData.getText();
 		String horaString = ftfHora.getText() + ":00";
