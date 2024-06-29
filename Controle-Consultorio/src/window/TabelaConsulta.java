@@ -5,9 +5,12 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -43,8 +46,9 @@ public class TabelaConsulta extends JFrame {
 	private PacienteDao pacienteDao = new PacienteDao();
 	private TratamentoDao tratamentoDao = new TratamentoDao();
 
-	DateTimeFormatter formatarData = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-
+	private SimpleDateFormat formatarData = new SimpleDateFormat("dd/MM/yyyy");
+	private SimpleDateFormat formatarHoraSemSeg = new SimpleDateFormat("HH:mm");
+	
 	/**
 	 * Launch the application.
 	 */
@@ -101,7 +105,7 @@ public class TabelaConsulta extends JFrame {
 
 		atualizarTabela();
 
-		JButton btnMarcarDesmarcar = new JButton("<html>Marcar/Desmarcar<br>Comparecimento<html>");
+		btnMarcarDesmarcar = new JButton("<html>Marcar/Desmarcar<br>Comparecimento<html>");
 		btnMarcarDesmarcar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Consulta consulta = new Consulta();
@@ -166,13 +170,11 @@ public class TabelaConsulta extends JFrame {
 		listaConsulta = consultaDao.listaDeConsultas();
 
 		for (Consulta consulta : listaConsulta) {
-			String timeStamp = String.valueOf(consulta.getDataHora());
-			long timeStampLong = Long.parseLong(timeStamp);
-			LocalDateTime dataHora = LocalDateTime.ofInstant(Instant.ofEpochSecond(timeStampLong),
-					ZoneId.systemDefault());
-
-			String data = dataHora.toLocalDate().toString();
-			String hora = dataHora.toLocalTime().toString();
+			Timestamp timeStampConsulta = consulta.getDataHora();
+			
+			String data = formatarData.format(timeStampConsulta);
+			String hora = formatarHoraSemSeg.format(timeStampConsulta);
+			
 			String comparecimento = consulta.isComparecimento() ? "Comparecido" : "Faltou";
 
 			Paciente paciente = pacienteDao.pesquisarPorId(consulta.getPaciente().getId());
@@ -191,17 +193,13 @@ public class TabelaConsulta extends JFrame {
 			Object idObj = table.getValueAt(linha, 0);
 			int id = (Integer) idObj;
 			consulta = consultaDao.pesquisarPorId(id);
+			
+			Timestamp timeStampConsulta = consulta.getDataHora();
+			
+			long agoraMiliSeg = Instant.now().toEpochMilli();
+			Timestamp timeStampAgora = new Timestamp(agoraMiliSeg);
 
-			LocalDateTime agora = LocalDateTime.now();
-			LocalDateTime agoraSemSegundos = agora.withSecond(0).withNano(0);
-
-			String timeStamp = String.valueOf(consulta.getDataHora());
-			long timeStampLong = Long.parseLong(timeStamp);
-			LocalDateTime dataHora = LocalDateTime.ofInstant(Instant.ofEpochSecond(timeStampLong),
-					ZoneId.systemDefault());
-			LocalDateTime dataHoraSemSegundos = dataHora.withSecond(0).withNano(0);
-
-			long diferencaDias = ChronoUnit.DAYS.between(agoraSemSegundos, dataHoraSemSegundos);
+			long diferencaDias = ChronoUnit.DAYS.between(timeStampAgora.toInstant(), timeStampConsulta.toInstant());
 
 			if (diferencaDias >= 5) {
 				btnMarcarDesmarcar.setEnabled(false);
@@ -230,8 +228,8 @@ public class TabelaConsulta extends JFrame {
 
 	public void consultasAgendadas() {
 
-		LocalDateTime agora = LocalDateTime.now();
-		LocalDateTime agoraSemSegundos = agora.withSecond(0).withNano(0);
+		long agoraMiliSeg = Instant.now().toEpochMilli();
+		Timestamp timeStampAgora = new Timestamp(agoraMiliSeg);
 
 		modelo = (DefaultTableModel) table.getModel();
 		modelo.setRowCount(0);
@@ -240,17 +238,12 @@ public class TabelaConsulta extends JFrame {
 
 		for (Consulta consulta : listaConsulta) {
 
-			String timeStamp = String.valueOf(consulta.getDataHora());
-			long timeStampLong = Long.parseLong(timeStamp);
-			LocalDateTime dataHora = LocalDateTime.ofInstant(Instant.ofEpochSecond(timeStampLong),
-					ZoneId.systemDefault());
-			
-			LocalDateTime dataHoraSemSegundos = dataHora.withSecond(0).withNano(0);
+			Timestamp timeStampConsulta = consulta.getDataHora();
 
-			if (agoraSemSegundos.isBefore(dataHoraSemSegundos)) {
-
-				String data = dataHoraSemSegundos.toLocalDate().toString();
-				String hora = dataHoraSemSegundos.toLocalTime().toString();
+			if (timeStampAgora.before(timeStampConsulta)) {
+				
+				String data = formatarData.format(timeStampConsulta);
+				String hora = formatarHoraSemSeg.format(timeStampConsulta);
 				String comparecimento = consulta.isComparecimento() ? "Comparecido" : "Faltou";
 
 				Paciente paciente = pacienteDao.pesquisarPorId(consulta.getPaciente().getId());
@@ -263,9 +256,9 @@ public class TabelaConsulta extends JFrame {
 	}
 
 	public void consultasPassadas() {
-		
-		LocalDateTime agora = LocalDateTime.now();
-		LocalDateTime agoraSemSegundos = agora.withSecond(0).withNano(0);
+
+		long agoraMiliSeg = Instant.now().toEpochMilli();
+		Timestamp timeStampAgora = new Timestamp(agoraMiliSeg);
 
 		modelo = (DefaultTableModel) table.getModel();
 		modelo.setRowCount(0);
@@ -274,16 +267,12 @@ public class TabelaConsulta extends JFrame {
 
 		for (Consulta consulta : listaConsulta) {
 
-			String timeStamp = String.valueOf(consulta.getDataHora());
-			long timeStampLong = Long.parseLong(timeStamp);
-			LocalDateTime dataHora = LocalDateTime.ofInstant(Instant.ofEpochSecond(timeStampLong),
-					ZoneId.systemDefault());
-			LocalDateTime dataHoraSemSegundos = dataHora.withSecond(0).withNano(0);
+			Timestamp timeStampConsulta = consulta.getDataHora();
 
-			if (agoraSemSegundos.isAfter(dataHoraSemSegundos)) {
-
-				String data = dataHoraSemSegundos.toLocalDate().toString();
-				String hora = dataHoraSemSegundos.toLocalTime().toString();
+			if (timeStampAgora.after(timeStampConsulta)) {
+				
+				String data = formatarData.format(timeStampConsulta);
+				String hora = formatarHoraSemSeg.format(timeStampConsulta);
 				String comparecimento = consulta.isComparecimento() ? "Comparecido" : "Faltou";
 
 				Paciente paciente = pacienteDao.pesquisarPorId(consulta.getPaciente().getId());
@@ -299,8 +288,10 @@ public class TabelaConsulta extends JFrame {
 
 		if (consulta.isComparecimento() == true) {
 			consulta.setComparecimento(false);
-		} else {
+		} else if (consulta.isComparecimento() == false) {
 			consulta.setComparecimento(true);
+		} else {
+			consulta.setComparecimento(false);
 		}
 	}
 

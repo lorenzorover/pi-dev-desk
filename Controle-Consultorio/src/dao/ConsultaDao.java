@@ -40,7 +40,7 @@ public class ConsultaDao {
 
 	public int cadastrarConsulta(Consulta consulta) {
 
-		String insert = "INSERT INTO responsavel(data_hora,descricao,comparecimento,paciente_id,tratamento,_id,produto_id) VALUES(?,?,?,?,?,?)";
+		String insert = "INSERT INTO consulta(data_hora,descricao,comparecimento,paciente_id,tratamento_id) VALUES(?,?,?,?,?)";
 
 		try {
 			Connection conn = getConexao();
@@ -148,7 +148,7 @@ public class ConsultaDao {
 
 	public void alterarConsulta(Consulta consulta) {
 
-		String sql = "UPDATE consulta SET data_hora = ?, descricao = ?, comparecimento = ?, paciente_id = ?, tratamento_id = ?, produto_id = ? WHERE id = ?";
+		String sql = "UPDATE consulta SET data_hora = ?, descricao = ?, comparecimento = ?, paciente_id = ?, tratamento_id = ? WHERE id = ?";
 
 		try {
 			Connection conn = getConexao();

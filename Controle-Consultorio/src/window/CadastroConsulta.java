@@ -49,7 +49,6 @@ public class CadastroConsulta extends JFrame {
 	
 	private MaskFormatter mascaraData;
 	private MaskFormatter mascaraHora;
-	private SimpleDateFormat formatarDataHora = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 	
 	private PacienteDao pacienteDao = new PacienteDao();
 	private TratamentoDao tratamentoDao = new TratamentoDao();
@@ -111,7 +110,7 @@ public class CadastroConsulta extends JFrame {
 		lblNewLabel_2.setBounds(104, 73, 25, 15);
 		panel.add(lblNewLabel_2);
 		
-		JComboBox<Paciente> cbPaciente = new JComboBox<>();
+		cbPaciente = new JComboBox<>();
 		cbPaciente.setBounds(139, 102, 152, 22);
 		panel.add(cbPaciente);
 		try {
@@ -123,7 +122,7 @@ public class CadastroConsulta extends JFrame {
 			e.printStackTrace();
 		}
 		
-		JComboBox<Tratamento> cbTratamento = new JComboBox<>();
+		cbTratamento = new JComboBox<>();
 		cbTratamento.setBounds(139, 135, 152, 22);
 		panel.add(cbTratamento);
 		try {
@@ -143,7 +142,7 @@ public class CadastroConsulta extends JFrame {
             return;
         }
 		
-		JFormattedTextField ftfHora = new JFormattedTextField(mascaraHora);
+		ftfHora = new JFormattedTextField(mascaraHora);
 		ftfHora.setBounds(139, 71, 79, 20);
 		panel.add(ftfHora);
 		
@@ -180,7 +179,7 @@ public class CadastroConsulta extends JFrame {
 		lblNewLabel_5.setBounds(78, 173, 51, 15);
 		panel.add(lblNewLabel_5);
 		
-		JFormattedTextField ftfData = new JFormattedTextField(mascaraData);
+		ftfData = new JFormattedTextField(mascaraData);
 		ftfData.setBounds(139, 40, 79, 20);
 		panel.add(ftfData);
 		
@@ -188,20 +187,26 @@ public class CadastroConsulta extends JFrame {
 	}
 	
 	public void cadastrarConsulta() {
+		SimpleDateFormat formatarDataHoraEntrada = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+		SimpleDateFormat formatoTimestamp = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+
 		String dataString = ftfData.getText();
-		String horaString = ftfHora.getText();
+		String horaString = ftfHora.getText() + ":00";
 		
-		Timestamp timeStamp = Timestamp.valueOf(dataString + " " + horaString);
-		String timeStampString = formatarDataHora.format(timeStamp);
+		Timestamp timeStamp = null;
 		
-		java.util.Date dataHoraJava = null;
 		try {
-			dataHoraJava = formatarDataHora.parse(timeStampString);
+		    String dataHoraString = dataString + " " + horaString;
+		    java.util.Date dataHoraJava = formatarDataHoraEntrada.parse(dataHoraString);
+		    String timeStampString = formatoTimestamp.format(dataHoraJava);
+		    timeStamp = Timestamp.valueOf(timeStampString);
+
 		} catch (ParseException e) {
-			e.printStackTrace();
+		    e.printStackTrace();
 		}
-		java.sql.Timestamp dataHora = new java.sql.Timestamp(dataHoraJava.getTime());
 		
+		java.sql.Timestamp dataHora = new java.sql.Timestamp(timeStamp.getTime());
+
 		String descricao = tfDescricao.getText();
 		Paciente pacienteSelecionado = (Paciente) cbPaciente.getSelectedItem();
 		Tratamento tratamentoSelecionado = (Tratamento) cbTratamento.getSelectedItem();

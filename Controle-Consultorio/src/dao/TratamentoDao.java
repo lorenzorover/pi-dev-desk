@@ -84,7 +84,7 @@ public class TratamentoDao {
 	
 	public Tratamento pesquisarPorId(int id) {
 		Tratamento tratamento = new Tratamento();
-		String query = "SELECT * FROM tratamentos WHERE id = ?";
+		String query = "SELECT * FROM tratamento WHERE id = ?";
 		try {
 			Connection con = getConexao();
 			PreparedStatement pst = con.prepareStatement(query);
