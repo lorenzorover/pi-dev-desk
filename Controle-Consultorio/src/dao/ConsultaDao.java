@@ -174,7 +174,7 @@ public class ConsultaDao {
 
 	public void deletarConsulta(int id) {
 
-		String sql = "DELETE FROM consulta WHERE consulta.id = ?";
+		String sql = "DELETE consulta FROM consulta WHERE consulta.id = ?";
 		try {
 			Connection conn = getConexao();
 			PreparedStatement pst = conn.prepareStatement(sql);

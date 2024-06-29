@@ -8,10 +8,6 @@ import java.awt.event.ActionListener;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +37,7 @@ public class TabelaConsulta extends JFrame {
 	private DefaultTableModel modelo;
 	private JButton btnMarcarDesmarcar;
 
-	private List<Consulta> listaConsulta = new ArrayList<>();
+	private List<Consulta> consultas = new ArrayList<>();
 	private ConsultaDao consultaDao = new ConsultaDao();
 	private PacienteDao pacienteDao = new PacienteDao();
 	private TratamentoDao tratamentoDao = new TratamentoDao();
@@ -167,9 +163,9 @@ public class TabelaConsulta extends JFrame {
 		modelo = (DefaultTableModel) table.getModel();
 		modelo.setRowCount(0);
 
-		listaConsulta = consultaDao.listaDeConsultas();
+		consultas = consultaDao.listaDeConsultas();
 
-		for (Consulta consulta : listaConsulta) {
+		for (Consulta consulta : consultas) {
 			Timestamp timeStampConsulta = consulta.getDataHora();
 			
 			String data = formatarData.format(timeStampConsulta);
@@ -190,8 +186,9 @@ public class TabelaConsulta extends JFrame {
 		int linha = table.getSelectedRow();
 
 		if (linha != -1) {
-			Object idObj = table.getValueAt(linha, 0);
-			int id = (Integer) idObj;
+			
+			consulta = consultas.get(linha);
+			int id = consulta.getId();
 			consulta = consultaDao.pesquisarPorId(id);
 			
 			Timestamp timeStampConsulta = consulta.getDataHora();
@@ -234,9 +231,9 @@ public class TabelaConsulta extends JFrame {
 		modelo = (DefaultTableModel) table.getModel();
 		modelo.setRowCount(0);
 
-		listaConsulta = consultaDao.listaDeConsultas();
+		consultas = consultaDao.listaDeConsultas();
 
-		for (Consulta consulta : listaConsulta) {
+		for (Consulta consulta : consultas) {
 
 			Timestamp timeStampConsulta = consulta.getDataHora();
 
@@ -263,9 +260,9 @@ public class TabelaConsulta extends JFrame {
 		modelo = (DefaultTableModel) table.getModel();
 		modelo.setRowCount(0);
 
-		listaConsulta = consultaDao.listaDeConsultas();
+		consultas = consultaDao.listaDeConsultas();
 
-		for (Consulta consulta : listaConsulta) {
+		for (Consulta consulta : consultas) {
 
 			Timestamp timeStampConsulta = consulta.getDataHora();
 

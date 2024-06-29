@@ -55,11 +55,11 @@ public class TabelaPaciente extends JFrame {
 	private JButton btnNewButton_1;
 	private JButton btnNewButton_3;
 
-	private List<Paciente> lista = new ArrayList<>();
-	private List<Consulta> listaConsulta = new ArrayList<>();
+	private List<Paciente> pacientes = new ArrayList<>();
+	private List<Consulta> consultas = new ArrayList<>();
 	private MaskFormatter mascaraData;
 	private MaskFormatter mascaraCpf;
-	private DateTimeFormatter dataFormatar = DateTimeFormatter.ofPattern("dd/mm/yyyy");
+	private SimpleDateFormat dataFormatar = new SimpleDateFormat("dd/MM/yyyy");
 
 	private PacienteDao pacienteDao = new PacienteDao();
 	private EnderecoDao enderecoDao = new EnderecoDao();
@@ -251,11 +251,14 @@ public class TabelaPaciente extends JFrame {
 		modelo = (DefaultTableModel) table.getModel();
 		modelo.setRowCount(0);
 
-		lista = pacienteDao.listaDePacientes();
+		pacientes = pacienteDao.listaDePacientes();
 
-		for (Paciente paciente : lista) {
+		for (Paciente paciente : pacientes) {
 			if (paciente.isDeletado() != true) {
-				modelo.addRow(new Object[] { paciente.getNome(), paciente.getDataNasc(), paciente.getCpf(),
+				
+				String dataNasc = dataFormatar.format(paciente.getDataNasc());
+				
+				modelo.addRow(new Object[] { paciente.getNome(), dataNasc, paciente.getCpf(),
 						paciente.getEmail(), paciente.getTelefone() });
 			}
 		}
@@ -264,14 +267,17 @@ public class TabelaPaciente extends JFrame {
 
 	public void pesquisaDinamica() {
 		String pesquisa = textField.getText();
-		lista = pacienteDao.listaDePacientes();
+		pacientes = pacienteDao.listaDePacientes();
 
 		modelo.setRowCount(0);
 
-		for (Paciente paciente : lista) {
+		for (Paciente paciente : pacientes) {
 			if (paciente.getNome().toLowerCase().startsWith(pesquisa.toLowerCase())) {
 				if (paciente.isDeletado() != true) {
-					modelo.addRow(new Object[] { paciente.getNome(), paciente.getDataNasc(), paciente.getCpf(),
+					
+					String dataNasc = dataFormatar.format(paciente.getDataNasc());
+					
+					modelo.addRow(new Object[] { paciente.getNome(), dataNasc, paciente.getCpf(),
 							paciente.getEmail(), paciente.getTelefone() });
 				}
 			}
@@ -427,8 +433,7 @@ public class TabelaPaciente extends JFrame {
 		String dataFormatada = formatarData.format(paciente.getDataNasc());
 
 		JTextField tfNome = new JTextField(paciente.getNome());
-		JFormattedTextField ftfCpf = new JFormattedTextField(mascaraCpf);
-		ftfCpf.setValue(String.valueOf(paciente.getCpf()));
+		JFormattedTextField ftfCpf = new JFormattedTextField(paciente.getCpf());
 		JFormattedTextField ftfDataNasc = new JFormattedTextField(mascaraData);
 		ftfDataNasc.setValue(dataFormatada);
 		JTextField tfTelefone = new JTextField(String.valueOf(paciente.getTelefone()));
@@ -487,8 +492,7 @@ public class TabelaPaciente extends JFrame {
 		Responsavel responsavel = responsavelDao.pesquisarPorId(paciente.getResponsavel().getId());
 
 		JTextField tfNome = new JTextField(responsavel.getNome());
-		JFormattedTextField ftfCpf = new JFormattedTextField(mascaraCpf);
-		ftfCpf.setValue(String.valueOf(responsavel.getCpf()));
+		JFormattedTextField ftfCpf = new JFormattedTextField(responsavel.getCpf());
 		JTextField tfTelefone = new JTextField(String.valueOf(responsavel.getTelefone()));
 		JTextField tfEmail = new JTextField(responsavel.getEmail());
 
@@ -587,12 +591,12 @@ public class TabelaPaciente extends JFrame {
 			paciente.setDeletado(true);
 			
 			
-			//Se a pessoa criou algum paciente errado e quer excluir
+			//Método abaixo se a pessoa criou algum paciente errado e quer excluir antes de inserir em alguma consulta
 			
 			boolean possuiConsulta = false;
-			listaConsulta = consultaDao.listaDeConsultas();
+			consultas = consultaDao.listaDeConsultas();
 			
-			for (Consulta consulta : listaConsulta) {
+			for (Consulta consulta : consultas) {
 				if (possuiConsulta = consulta.getPaciente().getId() == paciente.getId()) {
 					possuiConsulta = true;
 					break;
@@ -613,9 +617,11 @@ public class TabelaPaciente extends JFrame {
 		int linha = table.getSelectedRow();
 
 		if (linha != -1) {
-			Object idObj = table.getValueAt(linha, 0);
-			int id = (Integer) idObj;
+			
+			paciente = pacientes.get(linha);
+			int id = paciente.getId();
 			paciente = pacienteDao.pesquisarPorId(id);
+
 			return paciente;
 		} else {
 			return null;
