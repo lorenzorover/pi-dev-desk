@@ -10,7 +10,9 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -38,9 +40,12 @@ public class TabelaConsulta extends JFrame {
 	private JButton btnMarcarDesmarcar;
 
 	private List<Consulta> consultas = new ArrayList<>();
+	private Map<Integer, Integer> mapaConsultas = new HashMap<>();
+	
 	private ConsultaDao consultaDao = new ConsultaDao();
 	private PacienteDao pacienteDao = new PacienteDao();
 	private TratamentoDao tratamentoDao = new TratamentoDao();
+	
 
 	private SimpleDateFormat formatarData = new SimpleDateFormat("dd/MM/yyyy");
 	private SimpleDateFormat formatarHoraSemSeg = new SimpleDateFormat("HH:mm");
@@ -112,6 +117,7 @@ public class TabelaConsulta extends JFrame {
 				} else {
 					JOptionPane.showMessageDialog(null, "Selecione uma linha");
 				}
+				
 			}
 		});
 		btnMarcarDesmarcar.setBounds(334, 247, 121, 37);
@@ -154,61 +160,9 @@ public class TabelaConsulta extends JFrame {
 		btnNewButton_3.setBounds(465, 261, 89, 23);
 		panel.add(btnNewButton_3);
 
-		table.setDefaultEditor(Object.class, null);
-
-		table.getTableHeader().setReorderingAllowed(false);
-	}
-
-	public void atualizarTabela() {
-		modelo = (DefaultTableModel) table.getModel();
-		modelo.setRowCount(0);
-
-		consultas = consultaDao.listaDeConsultas();
-
-		for (Consulta consulta : consultas) {
-			Timestamp timeStampConsulta = consulta.getDataHora();
-			
-			String data = formatarData.format(timeStampConsulta);
-			String hora = formatarHoraSemSeg.format(timeStampConsulta);
-			
-			String comparecimento = consulta.isComparecimento() ? "Comparecido" : "Faltou";
-
-			Paciente paciente = pacienteDao.pesquisarPorId(consulta.getPaciente().getId());
-			Tratamento tratamento = tratamentoDao.pesquisarPorId(consulta.getTratamento().getId());
-
-			modelo.addRow(new Object[] { data, hora, paciente.getNome(), tratamento.getNome(), consulta.getDescricao(),
-					comparecimento });
-		}
-
-	}
-
-	public Object selecionarLinhaPorId(Consulta consulta) {
-		int linha = table.getSelectedRow();
-
-		if (linha != -1) {
-			
-			consulta = consultas.get(linha);
-			int id = consulta.getId();
-			consulta = consultaDao.pesquisarPorId(id);
-			
-			Timestamp timeStampConsulta = consulta.getDataHora();
-			
-			long agoraMiliSeg = Instant.now().toEpochMilli();
-			Timestamp timeStampAgora = new Timestamp(agoraMiliSeg);
-
-			long diferencaDias = ChronoUnit.DAYS.between(timeStampAgora.toInstant(), timeStampConsulta.toInstant());
-
-			if (diferencaDias >= 5) {
-				btnMarcarDesmarcar.setEnabled(false);
-			} else {
-				btnMarcarDesmarcar.setEnabled(true);
-			}
-
-			return consulta;
-
-		} else {
-			return null;
-		}
+//		table.setDefaultEditor(Object.class, null);
+//
+//		table.getTableHeader().setReorderingAllowed(false);
 	}
 
 	public void excluirConsulta(Consulta consulta) {
@@ -232,12 +186,15 @@ public class TabelaConsulta extends JFrame {
 		modelo.setRowCount(0);
 
 		consultas = consultaDao.listaDeConsultas();
+		mapaConsultas.clear();
+		int linha = 0;
 
 		for (Consulta consulta : consultas) {
 
 			Timestamp timeStampConsulta = consulta.getDataHora();
 
 			if (timeStampAgora.before(timeStampConsulta)) {
+				mapaConsultas.put(linha, consulta.getId());
 				
 				String data = formatarData.format(timeStampConsulta);
 				String hora = formatarHoraSemSeg.format(timeStampConsulta);
@@ -248,6 +205,8 @@ public class TabelaConsulta extends JFrame {
 
 				modelo.addRow(new Object[] { data, hora, paciente.getNome(), tratamento.getNome(),
 						consulta.getDescricao(), comparecimento });
+				
+				linha++;
 			}
 		}
 	}
@@ -261,12 +220,15 @@ public class TabelaConsulta extends JFrame {
 		modelo.setRowCount(0);
 
 		consultas = consultaDao.listaDeConsultas();
+		mapaConsultas.clear();
+		int linha = 0;
 
 		for (Consulta consulta : consultas) {
 
 			Timestamp timeStampConsulta = consulta.getDataHora();
 
 			if (timeStampAgora.after(timeStampConsulta)) {
+				mapaConsultas.put(linha, consulta.getId());
 				
 				String data = formatarData.format(timeStampConsulta);
 				String hora = formatarHoraSemSeg.format(timeStampConsulta);
@@ -277,18 +239,79 @@ public class TabelaConsulta extends JFrame {
 
 				modelo.addRow(new Object[] { data, hora, paciente.getNome(), tratamento.getNome(),
 						consulta.getDescricao(), comparecimento });
+				
+				linha++;
 			}
 		}
 	}
 
 	public void marcarOuDesmarcar(Consulta consulta) {
+		
+		Timestamp timeStampConsulta = consulta.getDataHora();
+		
+		long agoraMiliSeg = Instant.now().toEpochMilli();
+		Timestamp timeStampAgora = new Timestamp(agoraMiliSeg);
 
-		if (consulta.isComparecimento() == true) {
-			consulta.setComparecimento(false);
-		} else if (consulta.isComparecimento() == false) {
-			consulta.setComparecimento(true);
+		long diferencaDias = ChronoUnit.DAYS.between(timeStampAgora.toInstant(), timeStampConsulta.toInstant());
+
+		if (diferencaDias < 5) {
+			if (consulta.isComparecimento() == true) {
+				consulta.setComparecimento(false);
+			} else if (consulta.isComparecimento() == false) {
+				consulta.setComparecimento(true);
+			} else {
+				consulta.setComparecimento(false);
+			}
 		} else {
-			consulta.setComparecimento(false);
+			JOptionPane.showMessageDialog(null, "Não foi possível marcar/desmarcar comparecimento, pois há diferença de 5 dias");
+		}
+
+		
+		
+		atualizarTabela();
+	}
+	
+	public void atualizarTabela() {
+		modelo = (DefaultTableModel) table.getModel();
+		modelo.setRowCount(0);
+
+		consultas = consultaDao.listaDeConsultas();
+		mapaConsultas.clear();
+		int linha = 0;
+
+		for (Consulta consulta : consultas) {
+			mapaConsultas.put(linha, consulta.getId());
+			
+			Timestamp timeStampConsulta = consulta.getDataHora();
+			
+			String data = formatarData.format(timeStampConsulta);
+			String hora = formatarHoraSemSeg.format(timeStampConsulta);
+			
+			String comparecimento = consulta.isComparecimento() ? "Comparecido" : "Faltou";
+
+			Paciente paciente = pacienteDao.pesquisarPorId(consulta.getPaciente().getId());
+			Tratamento tratamento = tratamentoDao.pesquisarPorId(consulta.getTratamento().getId());
+
+			modelo.addRow(new Object[] { data, hora, paciente.getNome(), tratamento.getNome(), consulta.getDescricao(),
+					comparecimento });
+			
+			linha++;
+		}
+
+	}
+	
+	public Object selecionarLinhaPorId(Consulta consulta) {
+		int linha = table.getSelectedRow();
+
+		if (linha != -1) {
+
+			int id = mapaConsultas.get(linha);
+			consulta = consultaDao.pesquisarPorId(id);
+
+			return consulta;
+
+		} else {
+			return null;
 		}
 	}
 

@@ -135,7 +135,7 @@ public class ConsultaDao {
 				Paciente paciente = pacienteDao.pesquisarPorId(pacienteId);
 				Tratamento tratamento = tratamentoDao.pesquisarPorId(tratamentoId);
 				
-				consulta = new Consulta(tratamentoId, dataHora, descricao, comparecimento, paciente, tratamento);
+				consulta = new Consulta(id, dataHora, descricao, comparecimento, paciente, tratamento);
 			}
 			pst.close();
 			pst.close();

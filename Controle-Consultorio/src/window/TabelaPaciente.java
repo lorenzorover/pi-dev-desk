@@ -6,13 +6,12 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -57,14 +56,16 @@ public class TabelaPaciente extends JFrame {
 
 	private List<Paciente> pacientes = new ArrayList<>();
 	private List<Consulta> consultas = new ArrayList<>();
-	private MaskFormatter mascaraData;
-	private MaskFormatter mascaraCpf;
-	private SimpleDateFormat dataFormatar = new SimpleDateFormat("dd/MM/yyyy");
-
+	private Map<Integer, Integer> mapaPacientes = new HashMap<>();
+	
 	private PacienteDao pacienteDao = new PacienteDao();
 	private EnderecoDao enderecoDao = new EnderecoDao();
 	private ResponsavelDao responsavelDao = new ResponsavelDao();
 	private ConsultaDao consultaDao = new ConsultaDao();
+	
+	private MaskFormatter mascaraData;
+	private MaskFormatter mascaraCpf;
+	private SimpleDateFormat dataFormatar = new SimpleDateFormat("dd/MM/yyyy");
 
 	/**
 	 * Launch the application.
@@ -114,6 +115,8 @@ public class TabelaPaciente extends JFrame {
 		table.setModel(new DefaultTableModel(new Object[][] {},
 				new String[] { "Nome", "Data de nascimento", "CPF", "Email", "Telefone" }));
 		scrollPane.setViewportView(table);
+		
+		atualizarTabela();
 
 		try {
 			mascaraData = new MaskFormatter("##/##/####");
@@ -135,8 +138,6 @@ public class TabelaPaciente extends JFrame {
 		lblNewLabel_1.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		lblNewLabel_1.setBounds(493, 14, 54, 15);
 		panel.add(lblNewLabel_1);
-
-		atualizarTabela();
 
 		textField = new JTextField();
 		textField.setBounds(557, 12, 108, 20);
@@ -247,38 +248,26 @@ public class TabelaPaciente extends JFrame {
 
 	}
 
-	public void atualizarTabela() {
-		modelo = (DefaultTableModel) table.getModel();
-		modelo.setRowCount(0);
-
-		pacientes = pacienteDao.listaDePacientes();
-
-		for (Paciente paciente : pacientes) {
-			if (paciente.isDeletado() != true) {
-				
-				String dataNasc = dataFormatar.format(paciente.getDataNasc());
-				
-				modelo.addRow(new Object[] { paciente.getNome(), dataNasc, paciente.getCpf(),
-						paciente.getEmail(), paciente.getTelefone() });
-			}
-		}
-
-	}
-
 	public void pesquisaDinamica() {
 		String pesquisa = textField.getText();
 		pacientes = pacienteDao.listaDePacientes();
 
 		modelo.setRowCount(0);
+		
+		mapaPacientes.clear();
+		int linha = 0;
 
 		for (Paciente paciente : pacientes) {
 			if (paciente.getNome().toLowerCase().startsWith(pesquisa.toLowerCase())) {
 				if (paciente.isDeletado() != true) {
+					mapaPacientes.put(linha, paciente.getId());
 					
 					String dataNasc = dataFormatar.format(paciente.getDataNasc());
 					
 					modelo.addRow(new Object[] { paciente.getNome(), dataNasc, paciente.getCpf(),
 							paciente.getEmail(), paciente.getTelefone() });
+					
+					linha++;
 				}
 			}
 		}
@@ -590,7 +579,6 @@ public class TabelaPaciente extends JFrame {
 		if (resultado == JOptionPane.OK_OPTION) {
 			paciente.setDeletado(true);
 			
-			
 			//Método abaixo se a pessoa criou algum paciente errado e quer excluir antes de inserir em alguma consulta
 			
 			boolean possuiConsulta = false;
@@ -613,15 +601,37 @@ public class TabelaPaciente extends JFrame {
 		atualizarTabela();
 	}
 
+	public void atualizarTabela() {
+		modelo = (DefaultTableModel) table.getModel();
+		modelo.setRowCount(0);
+
+		pacientes = pacienteDao.listaDePacientes();
+		mapaPacientes.clear();
+		int linha = 0;
+
+		for (Paciente paciente : pacientes) {
+			if (paciente.isDeletado() != true) {
+				mapaPacientes.put(linha, paciente.getId());
+				
+				String dataNasc = dataFormatar.format(paciente.getDataNasc());
+				
+				modelo.addRow(new Object[] { paciente.getNome(), dataNasc, paciente.getCpf(),
+						paciente.getEmail(), paciente.getTelefone() });
+				
+				linha++;
+			}
+		}
+
+	}
+	
 	public Object selecionarLinhaPorId(Paciente paciente) {
 		int linha = table.getSelectedRow();
-
 		if (linha != -1) {
-			
-			paciente = pacientes.get(linha);
-			int id = paciente.getId();
+
+			int id = mapaPacientes.get(linha);
 			paciente = pacienteDao.pesquisarPorId(id);
 
+			System.out.println(paciente.getId());
 			return paciente;
 		} else {
 			return null;

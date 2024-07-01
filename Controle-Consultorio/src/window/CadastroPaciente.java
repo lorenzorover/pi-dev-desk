@@ -324,8 +324,8 @@ public class CadastroPaciente extends JFrame {
 		JButton btnSalvar = new JButton("Salvar");
 		btnSalvar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Responsavel responsavel = new Responsavel(null, 0, 0, null);
-				Endereco endereco = new Endereco(0, null, null, null, null, 0);
+				Responsavel responsavel = new Responsavel();
+				Endereco endereco = new Endereco();
 				int responsavelId = 0;
 				int enderecoId = 0;
 				
@@ -379,6 +379,7 @@ public class CadastroPaciente extends JFrame {
 	public void cadastrarPaciente(int responsavelId, int enderecoId) {
 		String dataString = ftfDataNasc.getText();
 		SimpleDateFormat formatarData = new SimpleDateFormat("dd/MM/yyyy");
+		Paciente paciente = new Paciente();
 		
 		java.util.Date utilDate = null;
 		try {
@@ -399,7 +400,7 @@ public class CadastroPaciente extends JFrame {
 		Responsavel responsavel = responsavelDao.pesquisarPorId(responsavelId);
 		Endereco endereco = enderecoDao.pesquisarPorId(enderecoId);
 		
-		Paciente paciente = new Paciente(nomePaciente, cpfPaciente, dataNasc, telefonePaciente, emailPaciente, endereco, responsavel, false);
+		paciente = new Paciente(nomePaciente, cpfPaciente, dataNasc, telefonePaciente, emailPaciente, endereco, responsavel, false);
 		
 		try {
 			pacienteDao.cadastrarPaciente(paciente);
