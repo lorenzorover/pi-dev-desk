@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import entidades.Tratamento;
-import entidades.Tratamento;
 
 public class TratamentoDao {
 	public Connection getConexao() throws ClassNotFoundException {
@@ -47,6 +46,8 @@ public class TratamentoDao {
 
 			pst.close();
 			conn.close();
+			
+			//colocar chave de retorno depois
 
 		} catch (Exception e) {
 			e.printStackTrace();

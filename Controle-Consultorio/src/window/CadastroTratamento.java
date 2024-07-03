@@ -15,9 +15,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
-import dao.EnderecoDao;
-import dao.PacienteDao;
-import dao.ResponsavelDao;
 import dao.TratamentoDao;
 import entidades.Tratamento;
 

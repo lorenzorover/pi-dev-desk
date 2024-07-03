@@ -9,8 +9,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import entidades.Endereco;
-import entidades.Responsavel;
 import entidades.Responsavel;
 
 public class ResponsavelDao {
@@ -42,8 +40,8 @@ public class ResponsavelDao {
 			PreparedStatement pst = conn.prepareStatement(insert, Statement.RETURN_GENERATED_KEYS);
 
 			pst.setString(1, responsavel.getNome());
-			pst.setInt(2, responsavel.getCpf());
-			pst.setInt(3, responsavel.getTelefone());
+			pst.setString(2, responsavel.getCpf());
+			pst.setString(3, responsavel.getTelefone());
 			pst.setString(4, responsavel.getEmail());
 
 			pst.executeUpdate();
@@ -78,8 +76,8 @@ public class ResponsavelDao {
 			while (rs.next()) {
 				int id = rs.getInt(1);
 				String nome = rs.getString(2);
-				int cpf = rs.getInt(3);
-				int telefone = rs.getInt(4);
+				String cpf = rs.getString(3);
+				String telefone = rs.getString(4);
 				String email = rs.getString(5);
 
 				Responsavel responsavel = new Responsavel(id, nome, cpf, telefone, email);
@@ -106,8 +104,8 @@ public class ResponsavelDao {
 			while (rs.next()) {
 				id = rs.getInt(1);
 				String nome = rs.getString(2);
-				int cpf = rs.getInt(3);
-				int telefone = rs.getInt(4);
+				String cpf = rs.getString(3);
+				String telefone = rs.getString(4);
 				String email = rs.getString(5);			
 				responsavel = new Responsavel(id, nome, cpf, telefone, email);
 			}
@@ -129,8 +127,8 @@ public class ResponsavelDao {
 			PreparedStatement pst = conn.prepareStatement(sql);
 
 			pst.setString(1, responsavel.getNome());
-			pst.setInt(2, responsavel.getCpf());
-			pst.setInt(3, responsavel.getTelefone());
+			pst.setString(2, responsavel.getCpf());
+			pst.setString(3, responsavel.getTelefone());
 			pst.setString(4, responsavel.getEmail());
 
 			pst.executeUpdate();

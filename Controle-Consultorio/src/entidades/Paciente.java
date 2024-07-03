@@ -5,16 +5,14 @@ import java.sql.Date;
 public class Paciente {
 	private int id;
 	private String nome;
-	private int cpf;
+	private String cpf;
 	private Date dataNasc;
-	private int telefone;
+	private String telefone;
 	private String email;
 	private Endereco endereco;
-	private Responsavel responsavel;
 	private boolean deletado;
 
-	public Paciente(int id, String nome, int cpf, Date dataNasc, int telefone, String email, Endereco endereco,
-			Responsavel responsavel, boolean deletado) {
+	public Paciente(int id, String nome, String cpf, Date dataNasc, String telefone, String email, Endereco endereco, boolean deletado) {
 		super();
 		this.id = id;
 		this.nome = nome;
@@ -23,12 +21,10 @@ public class Paciente {
 		this.telefone = telefone;
 		this.email = email;
 		this.endereco = endereco;
-		this.responsavel = responsavel;
 		this.deletado = deletado;
 	}
 
-	public Paciente(String nome, int cpf, Date dataNasc, int telefone, String email, Endereco endereco,
-			Responsavel responsavel, boolean deletado) {
+	public Paciente(String nome, String cpf, Date dataNasc, String telefone, String email, Endereco endereco, boolean deletado) {
 		super();
 		this.nome = nome;
 		this.cpf = cpf;
@@ -36,12 +32,11 @@ public class Paciente {
 		this.telefone = telefone;
 		this.email = email;
 		this.endereco = endereco;
-		this.responsavel = responsavel;
 		this.deletado = deletado;
 	}
 
 	public Paciente() {
-		// TODO Auto-generated constructor stub
+		
 	}
 
 	public String getNome() {
@@ -52,11 +47,11 @@ public class Paciente {
 		this.nome = nome;
 	}
 
-	public int getCpf() {
+	public String getCpf() {
 		return cpf;
 	}
 
-	public void setCpf(int cpf) {
+	public void setCpf(String cpf) {
 		this.cpf = cpf;
 	}
 
@@ -68,11 +63,11 @@ public class Paciente {
 		this.dataNasc = dataNasc;
 	}
 
-	public int getTelefone() {
+	public String getTelefone() {
 		return telefone;
 	}
 
-	public void setTelefone(int telefone) {
+	public void setTelefone(String telefone) {
 		this.telefone = telefone;
 	}
 
@@ -90,14 +85,6 @@ public class Paciente {
 
 	public void setEndereco(Endereco endereco) {
 		this.endereco = endereco;
-	}
-
-	public Responsavel getResponsavel() {
-		return responsavel;
-	}
-
-	public void setResponsavel(Responsavel responsavel) {
-		this.responsavel = responsavel;
 	}
 
 	public boolean isDeletado() {

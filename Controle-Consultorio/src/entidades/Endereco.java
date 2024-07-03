@@ -2,14 +2,14 @@ package entidades;
 
 public class Endereco {
 	private int id;
-	private int cep;
+	private String cep;
 	private String rua;
 	private String bairro;
 	private String uf;
 	private String cidade;
 	private int numero;
 
-	public Endereco(int id, int cep, String rua, String bairro, String uf, String cidade, int numero) {
+	public Endereco(int id, String cep, String rua, String bairro, String uf, String cidade, int numero) {
 		super();
 		this.id = id;
 		this.cep = cep;
@@ -20,7 +20,7 @@ public class Endereco {
 		this.numero = numero;
 	}
 
-	public Endereco(int cep, String rua, String bairro, String uf, String cidade, int numero) {
+	public Endereco(String cep, String rua, String bairro, String uf, String cidade, int numero) {
 		super();
 		this.cep = cep;
 		this.rua = rua;
@@ -34,11 +34,11 @@ public class Endereco {
 		// TODO Auto-generated constructor stub
 	}
 
-	public int getCep() {
+	public String getCep() {
 		return cep;
 	}
 
-	public void setCep(int cep) {
+	public void setCep(String cep) {
 		this.cep = cep;
 	}
 

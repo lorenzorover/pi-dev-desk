@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import entidades.Compra;
-import entidades.Compra;
 
 public class CompraDao {
 
@@ -49,6 +48,8 @@ public class CompraDao {
 
 			pst.close();
 			conn.close();
+			
+			//colocar chave de retorno depois
 
 		} catch (Exception e) {
 			e.printStackTrace();

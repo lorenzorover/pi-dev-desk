@@ -5,7 +5,7 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Date;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
@@ -19,12 +19,15 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.MaskFormatter;
+import javax.swing.text.NumberFormatter;
 
 import dao.EnderecoDao;
 import dao.PacienteDao;
+import dao.PacienteResponsavelDao;
 import dao.ResponsavelDao;
 import entidades.Endereco;
 import entidades.Paciente;
+import entidades.PacienteResponsavel;
 import entidades.Responsavel;
 
 public class CadastroPaciente extends JFrame {
@@ -36,7 +39,7 @@ public class CadastroPaciente extends JFrame {
 	private JTextField tfBairro;
 	private JTextField tfUf;
 	private JTextField tfCidade;
-	private JTextField tfNumero;
+	private JFormattedTextField ftfNumero;
 	private JTextField tfNomePaciente;
 	private JFormattedTextField ftfDataNasc;
 	private JFormattedTextField ftfTelefonePaciente;
@@ -55,6 +58,7 @@ public class CadastroPaciente extends JFrame {
 	private PacienteDao pacienteDao = new PacienteDao();
 	private ResponsavelDao responsavelDao = new ResponsavelDao();
 	private EnderecoDao enderecoDao = new EnderecoDao();
+	private PacienteResponsavelDao pacienteResponsavelDao = new PacienteResponsavelDao();
 
 	/**
 	 * Launch the application.
@@ -115,15 +119,19 @@ public class CadastroPaciente extends JFrame {
 		
 		try {
             mascaraData = new MaskFormatter("##/##/####");
+            mascaraData.setPlaceholderCharacter('_');
             mascaraTelefone = new MaskFormatter("(##) #####-####");
+            mascaraTelefone.setPlaceholderCharacter('_');
             mascaraCpf = new MaskFormatter("###.###.###-##");
+            mascaraCpf.setPlaceholderCharacter('_');
             mascaraCep = new MaskFormatter("#####-###");
+            mascaraCep.setPlaceholderCharacter('_');
         } catch (Exception e) {
             e.printStackTrace();
             return;
         }
 		
-		ftfCep = new JFormattedTextField(           );
+		ftfCep = new JFormattedTextField(mascaraCep           );
 		ftfCep.setBounds(105, 46, 117, 20);
 		pEndereco.add(ftfCep);
 		ftfCep.setColumns(10);
@@ -153,10 +161,22 @@ public class CadastroPaciente extends JFrame {
 		pEndereco.add(tfCidade);
 		tfCidade.setColumns(10);
 		
-		tfNumero = new JTextField();
-		tfNumero.setBounds(105, 200, 54, 20);
-		pEndereco.add(tfNumero);
-		tfNumero.setColumns(10);
+		NumberFormatter formatter = null;
+		
+		try {
+			DecimalFormat format = new DecimalFormat("#");
+	        formatter = new NumberFormatter(format);
+	        formatter.setValueClass(Integer.class);
+	        formatter.setMinimum(0); //Define o número para não aceitar negativos
+		} catch (Exception e) {
+			e.printStackTrace();
+			return;
+		}
+		
+		ftfNumero = new JFormattedTextField(formatter);
+		ftfNumero.setBounds(105, 200, 54, 20);
+		pEndereco.add(ftfNumero);
+		ftfNumero.setColumns(10);
 		
 		JLabel lblNewLabel_15 = new JLabel("Bairro");
 		lblNewLabel_15.setFont(new Font("Tahoma", Font.PLAIN, 12));
@@ -214,7 +234,7 @@ public class CadastroPaciente extends JFrame {
 		ftfDataNasc.setBounds(98, 128, 86, 20);
 		pPaciente.add(ftfDataNasc);
 		
-		ftfTelefonePaciente = new JFormattedTextField(         );
+		ftfTelefonePaciente = new JFormattedTextField(mascaraTelefone         );
 		ftfTelefonePaciente.setColumns(10);
 		ftfTelefonePaciente.setBounds(98, 159, 86, 20);
 		pPaciente.add(ftfTelefonePaciente);
@@ -240,7 +260,7 @@ public class CadastroPaciente extends JFrame {
 		chckbxResponsavel.setBounds(95, 217, 131, 23);
 		pPaciente.add(chckbxResponsavel);
 		
-		ftfCpfPaciente = new JFormattedTextField(          );
+		ftfCpfPaciente = new JFormattedTextField(mascaraCpf          );
 		ftfCpfPaciente.setBounds(98, 97, 128, 20);
 		pPaciente.add(ftfCpfPaciente);
 		
@@ -267,12 +287,12 @@ public class CadastroPaciente extends JFrame {
 		tfNomeResponsavel.setBounds(101, 52, 202, 20);
 		pResponsavel.add(tfNomeResponsavel);
 		
-		ftfCpfResponsavel = new JFormattedTextField(      );
+		ftfCpfResponsavel = new JFormattedTextField(mascaraCpf      );
 		ftfCpfResponsavel.setColumns(10);
 		ftfCpfResponsavel.setBounds(101, 83, 86, 20);
 		pResponsavel.add(ftfCpfResponsavel);
 		
-		ftfTelefoneResponsavel = new JFormattedTextField(         );
+		ftfTelefoneResponsavel = new JFormattedTextField(mascaraTelefone         );
 		ftfTelefoneResponsavel.setColumns(10);
 		ftfTelefoneResponsavel.setBounds(101, 114, 86, 20);
 		pResponsavel.add(ftfTelefoneResponsavel);
@@ -324,18 +344,14 @@ public class CadastroPaciente extends JFrame {
 		JButton btnSalvar = new JButton("Salvar");
 		btnSalvar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Responsavel responsavel = new Responsavel();
-				Endereco endereco = new Endereco();
 				int responsavelId = 0;
 				int enderecoId = 0;
 				
 				if (chckbxResponsavel.isSelected()) {
-					responsavelId = cadastrarResponsavel(responsavel);
-				} else {
-					responsavelId = responsavelDao.cadastrarResponsavel(responsavel); // Cadastra o dao com valores nulos
-				};
+					responsavelId = cadastrarResponsavel();
+				}
 				
-				enderecoId = cadastrarEndereco(endereco);
+				enderecoId = cadastrarEndereco();
 				
 				cadastrarPaciente(responsavelId, enderecoId);
 			}
@@ -345,38 +361,36 @@ public class CadastroPaciente extends JFrame {
 		
 	}
 	
-	public int cadastrarResponsavel(Responsavel responsavel) {
-		String cpfFormatado = ftfCpfResponsavel.getText().replace(".", "").replace("-", "");
-		String telefoneFormatado = ftfTelefoneResponsavel.getText().replace("(", "").replace(")", "").replace("-", "").replace(" ", "");
+	public int cadastrarResponsavel() {
 		
 		String nomeResponsavel = tfNomeResponsavel.getText();
-		int cpfResponsavel = Integer.valueOf(cpfFormatado);
-		int telefoneResponsavel = Integer.valueOf(telefoneFormatado);
+		String cpfResponsavel = ftfCpfResponsavel.getText();
+		String telefoneResponsavel = ftfTelefoneResponsavel.getText();
 		String emailResponsavel = tfEmailResponsavel.getText();
 		
-		responsavel = new Responsavel(nomeResponsavel, cpfResponsavel, telefoneResponsavel, emailResponsavel);
-		responsavelDao.cadastrarResponsavel(responsavel);
+		Responsavel responsavel = new Responsavel(nomeResponsavel, cpfResponsavel, telefoneResponsavel, emailResponsavel);
+		int responsavelId = responsavelDao.cadastrarResponsavel(responsavel);
 		
-		return responsavelDao.cadastrarResponsavel(responsavel); //Retorna o Id
+		return responsavelId; //Retorna o Id
 	}
 	
-	public int cadastrarEndereco(Endereco endereco) {
-		String cepFormatado = ftfCep.getText().replace("-", "");
+	public int cadastrarEndereco() {
 		
-		int cep = Integer.valueOf(cepFormatado);
+		String cep = ftfCep.getText();
 		String rua = tfRua.getText();
 		String bairro = tfBairro.getText();
 		String uf = tfUf.getText();
 		String cidade = tfCidade.getText();
-		int numero = Integer.parseInt(tfNumero.getText());
+		int numero = Integer.parseInt(ftfNumero.getText());
 		
-		endereco = new Endereco(cep, rua, bairro, uf, cidade, numero);
-		enderecoDao.cadastrarEndereco(endereco);
+		Endereco endereco = new Endereco(cep, rua, bairro, uf, cidade, numero);
+		int enderecoId = enderecoDao.cadastrarEndereco(endereco);
 		
-		return enderecoDao.cadastrarEndereco(endereco); //Retorna o Id
+		return enderecoId; //Retorna o Id
 	}
 	
 	public void cadastrarPaciente(int responsavelId, int enderecoId) {
+		
 		String dataString = ftfDataNasc.getText();
 		SimpleDateFormat formatarData = new SimpleDateFormat("dd/MM/yyyy");
 		Paciente paciente = new Paciente();
@@ -387,23 +401,30 @@ public class CadastroPaciente extends JFrame {
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		java.sql.Date dataNasc = new java.sql.Date(utilDate.getTime());
-		
-		String cpfFormatado = ftfCpfPaciente.getText().replace(".", "").replace("-", "");
-		String telefoneFormatado = ftfTelefonePaciente.getText().replace("(", "").replace(")", "").replace("-", "").replace(" ", "");
 		
 		String nomePaciente = tfNomePaciente.getText();
-		int cpfPaciente = Integer.valueOf(cpfFormatado);
-		int telefonePaciente = Integer.valueOf(telefoneFormatado);
+		String cpfPaciente = ftfCpfPaciente.getText();
+		java.sql.Date dataNasc = new java.sql.Date(utilDate.getTime());
+		String telefonePaciente = ftfTelefonePaciente.getText();
 		String emailPaciente = tfEmailPaciente.getText();
 		
-		Responsavel responsavel = responsavelDao.pesquisarPorId(responsavelId);
 		Endereco endereco = enderecoDao.pesquisarPorId(enderecoId);
 		
-		paciente = new Paciente(nomePaciente, cpfPaciente, dataNasc, telefonePaciente, emailPaciente, endereco, responsavel, false);
+		paciente = new Paciente(nomePaciente, cpfPaciente, dataNasc, telefonePaciente, emailPaciente, endereco, false);
 		
 		try {
-			pacienteDao.cadastrarPaciente(paciente);
+			int pacienteId = pacienteDao.cadastrarPaciente(paciente);
+			
+//			Inicializando o objeto pacienteResponsavel caso a checkbox do responsavel for selecionada e 
+//			Pegando novamente o responsavel e o paciente pelo id e inserindo corretamente no pacienteResponsavel
+			if (responsavelId != 0) {
+				PacienteResponsavel pacienteResponsavel = new PacienteResponsavel();
+				Responsavel responsavel = responsavelDao.pesquisarPorId(responsavelId);
+				paciente = pacienteDao.pesquisarPorId(pacienteId);
+				pacienteResponsavel = new PacienteResponsavel(paciente, responsavel);
+				pacienteResponsavelDao.cadastrarPacienteResponsavel(pacienteResponsavel);
+			}
+			
 			JOptionPane.showMessageDialog(null, "Cadastro realizado com sucesso.", "Cadastro", JOptionPane.DEFAULT_OPTION);
 			this.dispose();
 	    } catch (Exception e) {

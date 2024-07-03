@@ -262,12 +262,11 @@ public class TabelaConsulta extends JFrame {
 			} else {
 				consulta.setComparecimento(false);
 			}
+			consultaDao.alterarConsulta(consulta);
 		} else {
-			JOptionPane.showMessageDialog(null, "Não foi possível marcar/desmarcar comparecimento, pois há diferença de 5 dias");
+			JOptionPane.showMessageDialog(null, "Não foi possível marcar/desmarcar comparecimento, pois há a diferença de 5 dias");
 		}
 
-		
-		
 		atualizarTabela();
 	}
 	

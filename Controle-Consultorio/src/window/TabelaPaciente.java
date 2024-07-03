@@ -33,10 +33,12 @@ import javax.swing.text.MaskFormatter;
 import dao.ConsultaDao;
 import dao.EnderecoDao;
 import dao.PacienteDao;
+import dao.PacienteResponsavelDao;
 import dao.ResponsavelDao;
 import entidades.Consulta;
 import entidades.Endereco;
 import entidades.Paciente;
+import entidades.PacienteResponsavel;
 import entidades.Responsavel;
 
 public class TabelaPaciente extends JFrame {
@@ -62,9 +64,13 @@ public class TabelaPaciente extends JFrame {
 	private EnderecoDao enderecoDao = new EnderecoDao();
 	private ResponsavelDao responsavelDao = new ResponsavelDao();
 	private ConsultaDao consultaDao = new ConsultaDao();
+	private PacienteResponsavelDao pacienteResponsavelDao = new PacienteResponsavelDao();
 	
-	private MaskFormatter mascaraData;
 	private MaskFormatter mascaraCpf;
+	private MaskFormatter mascaraData;
+	private MaskFormatter mascaraTelefone;
+	private MaskFormatter mascaraCep;
+	
 	private SimpleDateFormat dataFormatar = new SimpleDateFormat("dd/MM/yyyy");
 
 	/**
@@ -120,15 +126,13 @@ public class TabelaPaciente extends JFrame {
 
 		try {
 			mascaraData = new MaskFormatter("##/##/####");
-			mascaraData.setPlaceholderCharacter('_');
-		} catch (Exception e) {
-			e.printStackTrace();
-			return;
-		}
-
-		try {
-			mascaraCpf = new MaskFormatter("###.###.###-##");
-			mascaraCpf.setPlaceholderCharacter('_');
+            mascaraData.setPlaceholderCharacter('_');
+            mascaraTelefone = new MaskFormatter("(##) #####-####");
+            mascaraTelefone.setPlaceholderCharacter('_');
+            mascaraCpf = new MaskFormatter("###.###.###-##");
+            mascaraCpf.setPlaceholderCharacter('_');
+            mascaraCep = new MaskFormatter("#####-###");
+            mascaraCep.setPlaceholderCharacter('_');
 		} catch (Exception e) {
 			e.printStackTrace();
 			return;
@@ -171,7 +175,7 @@ public class TabelaPaciente extends JFrame {
 				String opcao = null;
 				paciente = (Paciente) selecionarLinhaPorId(paciente);
 
-				if (paciente.getResponsavel().getNome() != null) {
+				if (pacienteResponsavelDao.pesquisarPorPacienteId(paciente.getId()) != null) {
 					String opcaoRetornada = selecionarOpcaoEditar(opcao, paciente);
 					if (opcaoRetornada.equals("paciente")) {
 						editarPaciente(paciente);
@@ -195,7 +199,7 @@ public class TabelaPaciente extends JFrame {
 				String opcao = null;
 				paciente = (Paciente) selecionarLinhaPorId(paciente);
 
-				if (paciente != null) {
+				if (pacienteResponsavelDao.pesquisarPorPacienteId(paciente.getId()) != null) {
 					String opcaoRetornada = selecionarResponsavelOuEndereco(opcao, paciente);
 					if (opcaoRetornada == "responsavel") {
 						informacoesAdicionaisResponsavel(paciente);
@@ -273,9 +277,49 @@ public class TabelaPaciente extends JFrame {
 		}
 	}
 
-	public String selecionarResponsavelOuEndereco(String opcao, Paciente paciente) {
+	public String selecionarOpcaoEditar(String opcao, Paciente paciente) {
+		PacienteResponsavel pacienteResponsavel = new PacienteResponsavel();
+		pacienteResponsavel = pacienteResponsavelDao.pesquisarPorPacienteId(paciente.getId());
+		
+		JRadioButton buttonPaciente = new JRadioButton("Paciente");
+		JRadioButton buttonEndereco = new JRadioButton("Endereço");
+		JRadioButton buttonResponsavel = new JRadioButton("Responsável");
+		buttonResponsavel.setEnabled(false);
 
-		if (paciente.getResponsavel().getNome() != null) {
+		ButtonGroup grupo = new ButtonGroup();
+		grupo.add(buttonEndereco);
+		grupo.add(buttonPaciente);
+
+		JPanel painel = new JPanel(new GridLayout(4, 2));
+		painel.add(buttonPaciente);
+		painel.add(buttonEndereco);
+
+		if (pacienteResponsavel.getResponsavel() != null) {
+			grupo.add(buttonResponsavel);
+			painel.add(buttonResponsavel);
+			buttonResponsavel.setEnabled(true);
+		}
+
+		int resultado = JOptionPane.showConfirmDialog(null, painel, "Opções", JOptionPane.OK_CANCEL_OPTION);
+
+		if (resultado == JOptionPane.OK_OPTION) {
+			if (buttonPaciente.isSelected()) {
+				return opcao = "paciente";
+			} else if (buttonEndereco.isSelected()) {
+				return opcao = "endereco";
+			} else if (buttonResponsavel.isEnabled() == true && buttonResponsavel.isSelected()) {
+				return opcao = "responsavel";
+			}
+		} else {
+			JOptionPane.showMessageDialog(null, "Selecione uma opção");
+		}
+		return null;
+	}
+	
+	public String selecionarResponsavelOuEndereco(String opcao, Paciente paciente) {
+		PacienteResponsavel pacienteResponsavel = new PacienteResponsavel();
+		pacienteResponsavel = pacienteResponsavelDao.pesquisarPorPacienteId(paciente.getId());
+		if (pacienteResponsavel.getResponsavel() != null) {
 			JRadioButton responsavel = new JRadioButton("Responsável");
 			JRadioButton endereco = new JRadioButton("Endereço");
 
@@ -298,44 +342,8 @@ public class TabelaPaciente extends JFrame {
 					JOptionPane.showMessageDialog(null, "Selecione uma opção");
 				}
 			}
-		} else if (paciente.getResponsavel().getNome() == null) {
+		} else if (pacienteResponsavel.getResponsavel() == null) {
 			return opcao = "endereco";
-		}
-		return null;
-	}
-
-	public String selecionarOpcaoEditar(String opcao, Paciente paciente) {
-		JRadioButton buttonPaciente = new JRadioButton("Paciente");
-		JRadioButton buttonEndereco = new JRadioButton("Endereço");
-		JRadioButton buttonResponsavel = new JRadioButton("Responsável");
-		buttonResponsavel.setEnabled(false);
-
-		ButtonGroup grupo = new ButtonGroup();
-		grupo.add(buttonEndereco);
-		grupo.add(buttonPaciente);
-
-		JPanel painel = new JPanel(new GridLayout(4, 2));
-		painel.add(buttonPaciente);
-		painel.add(buttonEndereco);
-
-		if (paciente.getResponsavel() != null) {
-			grupo.add(buttonResponsavel);
-			painel.add(buttonResponsavel);
-			buttonResponsavel.setEnabled(true);
-		}
-
-		int resultado = JOptionPane.showConfirmDialog(null, painel, "Opções", JOptionPane.OK_CANCEL_OPTION);
-
-		if (resultado == JOptionPane.OK_OPTION) {
-			if (buttonPaciente.isSelected()) {
-				return opcao = "paciente";
-			} else if (buttonEndereco.isSelected()) {
-				return opcao = "endereco";
-			} else if (buttonResponsavel.isEnabled() == true && buttonResponsavel.isSelected()) {
-				return opcao = "responsavel";
-			}
-		} else {
-			JOptionPane.showMessageDialog(null, "Selecione uma opção");
 		}
 		return null;
 	}
@@ -344,7 +352,7 @@ public class TabelaPaciente extends JFrame {
 
 		Endereco endereco = enderecoDao.pesquisarPorId(paciente.getEndereco().getId());
 
-		JTextField tfCep = new JTextField(String.valueOf(endereco.getCep()));
+		JTextField tfCep = new JTextField(endereco.getCep());
 		JTextField tfRua = new JTextField(endereco.getRua());
 		JTextField tfBairro = new JTextField(endereco.getBairro());
 		JTextField tfUf = new JTextField(endereco.getUf());
@@ -384,12 +392,12 @@ public class TabelaPaciente extends JFrame {
 	}
 
 	public void informacoesAdicionaisResponsavel(Paciente paciente) {
-
-		Responsavel responsavel = responsavelDao.pesquisarPorId(paciente.getResponsavel().getId());
+		PacienteResponsavel pacienteResponsavel = pacienteResponsavelDao.pesquisarPorPacienteId(paciente.getId());
+		Responsavel responsavel = responsavelDao.pesquisarPorId(pacienteResponsavel.getResponsavel().getId());
 
 		JTextField tfNome = new JTextField(responsavel.getNome());
-		JTextField tfCpf = new JTextField(String.valueOf(responsavel.getCpf()));
-		JTextField tfTelefone = new JTextField(String.valueOf(responsavel.getTelefone()));
+		JTextField tfCpf = new JTextField(responsavel.getCpf());
+		JTextField tfTelefone = new JTextField(responsavel.getTelefone());
 		JTextField tfEmail = new JTextField(responsavel.getEmail());
 
 		tfNome.setEditable(false);
@@ -417,15 +425,16 @@ public class TabelaPaciente extends JFrame {
 	}
 
 	public void editarPaciente(Paciente paciente) {
-
 		SimpleDateFormat formatarData = new SimpleDateFormat("dd/MM/yyyy");
 		String dataFormatada = formatarData.format(paciente.getDataNasc());
 
 		JTextField tfNome = new JTextField(paciente.getNome());
-		JFormattedTextField ftfCpf = new JFormattedTextField(paciente.getCpf());
+		JFormattedTextField ftfCpf = new JFormattedTextField(mascaraCpf);
+		ftfCpf.setText(paciente.getCpf());
 		JFormattedTextField ftfDataNasc = new JFormattedTextField(mascaraData);
-		ftfDataNasc.setValue(dataFormatada);
-		JTextField tfTelefone = new JTextField(String.valueOf(paciente.getTelefone()));
+		ftfDataNasc.setText(dataFormatada);
+		JFormattedTextField ftfTelefone = new JFormattedTextField(mascaraTelefone);
+		ftfTelefone.setText(paciente.getTelefone());
 		JTextField tfEmail = new JTextField(paciente.getEmail());
 
 		JLabel lblNome = new JLabel("Nome");
@@ -442,7 +451,7 @@ public class TabelaPaciente extends JFrame {
 		painel.add(lblDataNasc);
 		painel.add(ftfDataNasc);
 		painel.add(lblTelefone);
-		painel.add(tfTelefone);
+		painel.add(ftfTelefone);
 		painel.add(lblEmail);
 		painel.add(tfEmail);
 
@@ -457,18 +466,16 @@ public class TabelaPaciente extends JFrame {
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
-			java.sql.Date dataNasc = new java.sql.Date(utilDate.getTime());
 
-			Responsavel responsavel = responsavelDao.pesquisarPorId(paciente.getResponsavel().getId());
 			Endereco endereco = enderecoDao.pesquisarPorId(paciente.getEndereco().getId());
 
 			String nome = tfNome.getText();
-			int cpf = Integer.parseInt(ftfCpf.getText());
-			
-			int telefone = Integer.parseInt(tfTelefone.getText());
+			String cpf = ftfCpf.getText();
+			java.sql.Date dataNasc = new java.sql.Date(utilDate.getTime());
+			String telefone = ftfTelefone.getText();
 			String email = tfEmail.getText();
 
-			paciente = new Paciente(nome, cpf, dataNasc, telefone, email, endereco, responsavel, false);
+			paciente = new Paciente(nome, cpf, dataNasc, telefone, email, endereco, false);
 			pacienteDao.alterarPaciente(paciente);
 
 			atualizarTabela();
@@ -477,12 +484,15 @@ public class TabelaPaciente extends JFrame {
 	}
 
 	public void editarResponsavel(Paciente paciente) {
-
-		Responsavel responsavel = responsavelDao.pesquisarPorId(paciente.getResponsavel().getId());
+//		Puxa o objeto pacienteResponsavel pelo id do paciente e logo em seguida puxa o responsável pelo id do objeto pacienteResponsavel
+		PacienteResponsavel pacienteResponsavel = pacienteResponsavelDao.pesquisarPorPacienteId(paciente.getId());
+		Responsavel responsavel = responsavelDao.pesquisarPorId(pacienteResponsavel.getResponsavel().getId());
 
 		JTextField tfNome = new JTextField(responsavel.getNome());
-		JFormattedTextField ftfCpf = new JFormattedTextField(responsavel.getCpf());
-		JTextField tfTelefone = new JTextField(String.valueOf(responsavel.getTelefone()));
+		JFormattedTextField ftfCpf = new JFormattedTextField(mascaraCpf);
+		ftfCpf.setText(responsavel.getCpf());
+		JFormattedTextField ftfTelefone = new JFormattedTextField(mascaraTelefone);
+		ftfTelefone.setText(responsavel.getTelefone());
 		JTextField tfEmail = new JTextField(responsavel.getEmail());
 
 		JLabel lblNome = new JLabel("Nome");
@@ -496,7 +506,7 @@ public class TabelaPaciente extends JFrame {
 		painel.add(lblCpf);
 		painel.add(ftfCpf);
 		painel.add(lblTelefone);
-		painel.add(tfTelefone);
+		painel.add(ftfTelefone);
 		painel.add(lblEmail);
 		painel.add(tfEmail);
 
@@ -506,8 +516,8 @@ public class TabelaPaciente extends JFrame {
 		if (resultado == JOptionPane.OK_OPTION) {
 
 			String nome = tfNome.getText();
-			int cpf = Integer.parseInt(ftfCpf.getText());
-			int telefone = Integer.parseInt(tfTelefone.getText());
+			String cpf = ftfCpf.getText();
+			String telefone = ftfTelefone.getText();
 			String email = tfEmail.getText();
 
 			responsavel = new Responsavel(nome, cpf, telefone, email);
@@ -522,7 +532,8 @@ public class TabelaPaciente extends JFrame {
 
 		Endereco endereco = enderecoDao.pesquisarPorId(paciente.getEndereco().getId());
 
-		JTextField tfCep = new JTextField(String.valueOf(endereco.getCep()));
+		JFormattedTextField ftfCep = new JFormattedTextField(mascaraCep);
+		ftfCep.setText(endereco.getCep());
 		JTextField tfRua = new JTextField(endereco.getRua());
 		JTextField tfBairro = new JTextField(endereco.getBairro());
 		JTextField tfUf = new JTextField(endereco.getUf());
@@ -538,7 +549,7 @@ public class TabelaPaciente extends JFrame {
 
 		JPanel painel = new JPanel(new GridLayout(0, 1));
 		painel.add(lblCep);
-		painel.add(tfCep);
+		painel.add(ftfCep);
 		painel.add(lblRua);
 		painel.add(tfRua);
 		painel.add(lblBairro);
@@ -555,7 +566,7 @@ public class TabelaPaciente extends JFrame {
 
 		if (resultado == JOptionPane.OK_OPTION) {
 
-			int cep = Integer.parseInt(tfCep.getText());
+			String cep = ftfCep.getText();
 			String rua = tfRua.getText();
 			String bairro = tfBairro.getText();
 			String uf = tfUf.getText();
@@ -571,6 +582,7 @@ public class TabelaPaciente extends JFrame {
 	}
 
 	public void excluirPaciente(Paciente paciente) {
+//		Essa função não exclui realmente o paciente, apenas o deixa oculto, alternando o boolean "deletado" para true
 
 		int resultado = JOptionPane.showConfirmDialog(null,
 				"Você está prestes a deletar o paciente " + paciente.getNome(), "ALERTA", JOptionPane.YES_NO_OPTION,
@@ -578,6 +590,7 @@ public class TabelaPaciente extends JFrame {
 
 		if (resultado == JOptionPane.OK_OPTION) {
 			paciente.setDeletado(true);
+			pacienteDao.alterarPaciente(paciente);
 			
 			//Método abaixo se a pessoa criou algum paciente errado e quer excluir antes de inserir em alguma consulta
 			
@@ -587,14 +600,25 @@ public class TabelaPaciente extends JFrame {
 			for (Consulta consulta : consultas) {
 				if (possuiConsulta = consulta.getPaciente().getId() == paciente.getId()) {
 					possuiConsulta = true;
+					JOptionPane.showMessageDialog(null,
+							"O paciente ainda possui consultas registradas no histórico do sistema e apenas ficará oculto", "Aviso", JOptionPane.DEFAULT_OPTION);
 					break;
 				} else {
 					possuiConsulta = false;
+					
 				}
 			}
 			
 			if (paciente.isDeletado() == true && possuiConsulta == false) {
-				pacienteDao.deletarPaciente(paciente.getId());
+				PacienteResponsavel pacienteResponsavel = new PacienteResponsavel();
+				pacienteResponsavel = pacienteResponsavelDao.pesquisarPorPacienteId(paciente.getId());
+
+				if (pacienteResponsavel.getResponsavel() != null) {
+					responsavelDao.deletarResponsavel(pacienteResponsavel.getResponsavel().getId()); //Exclui o responsável relacionado
+					pacienteResponsavelDao.deletarPacienteResponsavel(paciente.getId()); //Quebra a ligação da tabela do paciente e do responsável
+				}
+				enderecoDao.deletarEndereco(paciente.getEndereco().getId()); //Exclui o endereço relacionado
+				pacienteDao.deletarPaciente(paciente.getId()); //Exclui o paciente
 			}
 		}
 
@@ -631,7 +655,6 @@ public class TabelaPaciente extends JFrame {
 			int id = mapaPacientes.get(linha);
 			paciente = pacienteDao.pesquisarPorId(id);
 
-			System.out.println(paciente.getId());
 			return paciente;
 		} else {
 			return null;

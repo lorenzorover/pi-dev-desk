@@ -38,7 +38,7 @@ public class EnderecoDao {
 			Connection conn = getConexao();
 			PreparedStatement pst = conn.prepareStatement(insert, Statement.RETURN_GENERATED_KEYS);
 			
-			pst.setInt(1, endereco.getCep());
+			pst.setString(1, endereco.getCep());
 			pst.setString(2, endereco.getRua());
 			pst.setString(3, endereco.getBairro());
 			pst.setString(4, endereco.getUf());
@@ -76,7 +76,7 @@ public class EnderecoDao {
 			ResultSet rs = pst.executeQuery();
 			while (rs.next()) {
 				int id = rs.getInt(1);
-				int cep = rs.getInt(2);
+				String cep = rs.getString(2);
 				String rua = rs.getString(3);
 				String bairro = rs.getString(4);
 				String uf = rs.getString(5);
@@ -106,7 +106,7 @@ public class EnderecoDao {
 			ResultSet rs = pst.executeQuery();
 			while (rs.next()) {
 				id = rs.getInt(1);
-				int cep = rs.getInt(2);
+				String cep = rs.getString(2);
 				String rua = rs.getString(3);
 				String bairro = rs.getString(4);
 				String uf = rs.getString(5);
@@ -131,7 +131,7 @@ public class EnderecoDao {
 			Connection conn = getConexao();
 			PreparedStatement pst = conn.prepareStatement(sql);
 
-			pst.setInt(1, endereco.getCep());
+			pst.setString(1, endereco.getCep());
 			pst.setString(2, endereco.getRua());
 			pst.setString(3, endereco.getBairro());
 			pst.setString(4, endereco.getUf());

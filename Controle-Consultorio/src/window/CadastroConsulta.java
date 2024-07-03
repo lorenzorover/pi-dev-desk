@@ -1,27 +1,20 @@
 package window;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Date;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -34,7 +27,6 @@ import dao.PacienteDao;
 import dao.TratamentoDao;
 import entidades.Consulta;
 import entidades.Paciente;
-import entidades.Responsavel;
 import entidades.Tratamento;
 
 public class CadastroConsulta extends JFrame {
@@ -136,7 +128,9 @@ public class CadastroConsulta extends JFrame {
 		
 		try {
             mascaraData = new MaskFormatter("##/##/####");
+            mascaraData.setPlaceholderCharacter('_');
             mascaraHora = new MaskFormatter("##:##");
+            mascaraHora.setPlaceholderCharacter('_');
         } catch (Exception e) {
             e.printStackTrace();
             return;
@@ -206,7 +200,6 @@ public class CadastroConsulta extends JFrame {
 		}
 		
 		java.sql.Timestamp dataHora = new java.sql.Timestamp(timeStamp.getTime());
-
 		String descricao = tfDescricao.getText();
 		Paciente pacienteSelecionado = (Paciente) cbPaciente.getSelectedItem();
 		Tratamento tratamentoSelecionado = (Tratamento) cbTratamento.getSelectedItem();
