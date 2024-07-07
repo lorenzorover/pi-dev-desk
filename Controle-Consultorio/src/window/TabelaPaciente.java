@@ -30,12 +30,10 @@ import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.MaskFormatter;
 
-import dao.ConsultaDao;
 import dao.EnderecoDao;
 import dao.PacienteDao;
 import dao.PacienteResponsavelDao;
 import dao.ResponsavelDao;
-import entidades.Consulta;
 import entidades.Endereco;
 import entidades.Paciente;
 import entidades.PacienteResponsavel;
@@ -57,20 +55,18 @@ public class TabelaPaciente extends JFrame {
 	private JButton btnNewButton_3;
 
 	private List<Paciente> pacientes = new ArrayList<>();
-	private List<Consulta> consultas = new ArrayList<>();
 	private Map<Integer, Integer> mapaPacientes = new HashMap<>();
-	
+
 	private PacienteDao pacienteDao = new PacienteDao();
 	private EnderecoDao enderecoDao = new EnderecoDao();
 	private ResponsavelDao responsavelDao = new ResponsavelDao();
-	private ConsultaDao consultaDao = new ConsultaDao();
 	private PacienteResponsavelDao pacienteResponsavelDao = new PacienteResponsavelDao();
-	
+
 	private MaskFormatter mascaraCpf;
 	private MaskFormatter mascaraData;
 	private MaskFormatter mascaraTelefone;
 	private MaskFormatter mascaraCep;
-	
+
 	private SimpleDateFormat dataFormatar = new SimpleDateFormat("dd/MM/yyyy");
 
 	/**
@@ -107,10 +103,6 @@ public class TabelaPaciente extends JFrame {
 		contentPane.add(panel);
 		panel.setLayout(null);
 
-//		table.setDefaultEditor(Object.class, null);
-//
-//		table.getTableHeader().setReorderingAllowed(false);
-
 		scrollPane = new JScrollPane();
 		scrollPane.setEnabled(false);
 		scrollPane.setBounds(10, 43, 655, 191);
@@ -121,18 +113,21 @@ public class TabelaPaciente extends JFrame {
 		table.setModel(new DefaultTableModel(new Object[][] {},
 				new String[] { "Nome", "Data de nascimento", "CPF", "Email", "Telefone" }));
 		scrollPane.setViewportView(table);
-		
+
+		table.setDefaultEditor(Object.class, null);
+		table.getTableHeader().setReorderingAllowed(false);
+
 		atualizarTabela();
 
 		try {
 			mascaraData = new MaskFormatter("##/##/####");
-            mascaraData.setPlaceholderCharacter('_');
-            mascaraTelefone = new MaskFormatter("(##) #####-####");
-            mascaraTelefone.setPlaceholderCharacter('_');
-            mascaraCpf = new MaskFormatter("###.###.###-##");
-            mascaraCpf.setPlaceholderCharacter('_');
-            mascaraCep = new MaskFormatter("#####-###");
-            mascaraCep.setPlaceholderCharacter('_');
+			mascaraData.setPlaceholderCharacter('_');
+			mascaraTelefone = new MaskFormatter("(##) #####-####");
+			mascaraTelefone.setPlaceholderCharacter('_');
+			mascaraCpf = new MaskFormatter("###.###.###-##");
+			mascaraCpf.setPlaceholderCharacter('_');
+			mascaraCep = new MaskFormatter("#####-###");
+			mascaraCep.setPlaceholderCharacter('_');
 		} catch (Exception e) {
 			e.printStackTrace();
 			return;
@@ -175,14 +170,16 @@ public class TabelaPaciente extends JFrame {
 				String opcao = null;
 				paciente = (Paciente) selecionarLinhaPorId(paciente);
 
-				if (pacienteResponsavelDao.pesquisarPorPacienteId(paciente.getId()) != null) {
-					String opcaoRetornada = selecionarOpcaoEditar(opcao, paciente);
-					if (opcaoRetornada.equals("paciente")) {
-						editarPaciente(paciente);
-					} else if (opcaoRetornada.equals("responsavel")) {
-						editarResponsavel(paciente);
-					} else if (opcaoRetornada.equals("endereco")) {
-						editarEndereco(paciente);
+				if (paciente != null) {
+					if (pacienteResponsavelDao.pesquisarPorPacienteId(paciente.getId()) != null) {
+						String opcaoRetornada = selecionarOpcaoEditar(opcao, paciente);
+						if (opcaoRetornada.equals("paciente")) {
+							editarPaciente(paciente);
+						} else if (opcaoRetornada.equals("responsavel")) {
+							editarResponsavel(paciente);
+						} else if (opcaoRetornada.equals("endereco")) {
+							editarEndereco(paciente);
+						}
 					}
 				} else {
 					JOptionPane.showMessageDialog(null, "Selecione uma linha");
@@ -196,16 +193,17 @@ public class TabelaPaciente extends JFrame {
 		btnNewButton_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Paciente paciente = new Paciente();
-				String opcao = null;
 				paciente = (Paciente) selecionarLinhaPorId(paciente);
 
-				if (pacienteResponsavelDao.pesquisarPorPacienteId(paciente.getId()) != null) {
-					String opcaoRetornada = selecionarResponsavelOuEndereco(opcao, paciente);
-					if (opcaoRetornada == "responsavel") {
-						informacoesAdicionaisResponsavel(paciente);
-					} else if (opcaoRetornada == "endereco") {
-						informacoesAdicionaisEndereco(paciente);
-					} 
+				if (paciente != null) {
+					if (pacienteResponsavelDao.pesquisarPorPacienteId(paciente.getId()) != null) {
+						String opcaoRetornada = selecionarResponsavelOuEndereco(paciente);
+						if (opcaoRetornada == "responsavel") {
+							informacoesAdicionaisResponsavel(paciente);
+						} else if (opcaoRetornada == "endereco") {
+							informacoesAdicionaisEndereco(paciente);
+						}
+					}
 				} else {
 					JOptionPane.showMessageDialog(null, "Selecione uma linha");
 				}
@@ -228,7 +226,7 @@ public class TabelaPaciente extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				Paciente paciente = new Paciente();
 				paciente = (Paciente) selecionarLinhaPorId(paciente);
-				
+
 				if (paciente != null) {
 					excluirPaciente(paciente);
 				} else {
@@ -257,7 +255,7 @@ public class TabelaPaciente extends JFrame {
 		pacientes = pacienteDao.listaDePacientes();
 
 		modelo.setRowCount(0);
-		
+
 		mapaPacientes.clear();
 		int linha = 0;
 
@@ -265,12 +263,12 @@ public class TabelaPaciente extends JFrame {
 			if (paciente.getNome().toLowerCase().startsWith(pesquisa.toLowerCase())) {
 				if (paciente.isDeletado() != true) {
 					mapaPacientes.put(linha, paciente.getId());
-					
+
 					String dataNasc = dataFormatar.format(paciente.getDataNasc());
-					
-					modelo.addRow(new Object[] { paciente.getNome(), dataNasc, paciente.getCpf(),
-							paciente.getEmail(), paciente.getTelefone() });
-					
+
+					modelo.addRow(new Object[] { paciente.getNome(), dataNasc, paciente.getCpf(), paciente.getEmail(),
+							paciente.getTelefone() });
+
 					linha++;
 				}
 			}
@@ -280,7 +278,7 @@ public class TabelaPaciente extends JFrame {
 	public String selecionarOpcaoEditar(String opcao, Paciente paciente) {
 		PacienteResponsavel pacienteResponsavel = new PacienteResponsavel();
 		pacienteResponsavel = pacienteResponsavelDao.pesquisarPorPacienteId(paciente.getId());
-		
+
 		JRadioButton buttonPaciente = new JRadioButton("Paciente");
 		JRadioButton buttonEndereco = new JRadioButton("Endereço");
 		JRadioButton buttonResponsavel = new JRadioButton("Responsável");
@@ -315,10 +313,13 @@ public class TabelaPaciente extends JFrame {
 		}
 		return null;
 	}
-	
-	public String selecionarResponsavelOuEndereco(String opcao, Paciente paciente) {
+
+	public String selecionarResponsavelOuEndereco(Paciente paciente) {
+		String opcao = null;
+
 		PacienteResponsavel pacienteResponsavel = new PacienteResponsavel();
 		pacienteResponsavel = pacienteResponsavelDao.pesquisarPorPacienteId(paciente.getId());
+
 		if (pacienteResponsavel.getResponsavel() != null) {
 			JRadioButton responsavel = new JRadioButton("Responsável");
 			JRadioButton endereco = new JRadioButton("Endereço");
@@ -345,7 +346,7 @@ public class TabelaPaciente extends JFrame {
 		} else if (pacienteResponsavel.getResponsavel() == null) {
 			return opcao = "endereco";
 		}
-		return null;
+		return opcao;
 	}
 
 	public void informacoesAdicionaisEndereco(Paciente paciente) {
@@ -427,6 +428,7 @@ public class TabelaPaciente extends JFrame {
 	public void editarPaciente(Paciente paciente) {
 		SimpleDateFormat formatarData = new SimpleDateFormat("dd/MM/yyyy");
 		String dataFormatada = formatarData.format(paciente.getDataNasc());
+		int id = paciente.getId();
 
 		JTextField tfNome = new JTextField(paciente.getNome());
 		JFormattedTextField ftfCpf = new JFormattedTextField(mascaraCpf);
@@ -467,15 +469,15 @@ public class TabelaPaciente extends JFrame {
 				e.printStackTrace();
 			}
 
-			Endereco endereco = enderecoDao.pesquisarPorId(paciente.getEndereco().getId());
-
 			String nome = tfNome.getText();
 			String cpf = ftfCpf.getText();
 			java.sql.Date dataNasc = new java.sql.Date(utilDate.getTime());
 			String telefone = ftfTelefone.getText();
 			String email = tfEmail.getText();
+			
+			Endereco endereco = enderecoDao.pesquisarPorId(paciente.getEndereco().getId());
 
-			paciente = new Paciente(nome, cpf, dataNasc, telefone, email, endereco, false);
+			paciente = new Paciente(id, nome, cpf, dataNasc, telefone, email, endereco, false);
 			pacienteDao.alterarPaciente(paciente);
 
 			atualizarTabela();
@@ -487,6 +489,7 @@ public class TabelaPaciente extends JFrame {
 //		Puxa o objeto pacienteResponsavel pelo id do paciente e logo em seguida puxa o responsável pelo id do objeto pacienteResponsavel
 		PacienteResponsavel pacienteResponsavel = pacienteResponsavelDao.pesquisarPorPacienteId(paciente.getId());
 		Responsavel responsavel = responsavelDao.pesquisarPorId(pacienteResponsavel.getResponsavel().getId());
+		int id = responsavel.getId();
 
 		JTextField tfNome = new JTextField(responsavel.getNome());
 		JFormattedTextField ftfCpf = new JFormattedTextField(mascaraCpf);
@@ -520,7 +523,7 @@ public class TabelaPaciente extends JFrame {
 			String telefone = ftfTelefone.getText();
 			String email = tfEmail.getText();
 
-			responsavel = new Responsavel(nome, cpf, telefone, email);
+			responsavel = new Responsavel(id, nome, cpf, telefone, email);
 			responsavelDao.alterarResponsavel(responsavel);
 
 			atualizarTabela();
@@ -529,8 +532,8 @@ public class TabelaPaciente extends JFrame {
 	}
 
 	public void editarEndereco(Paciente paciente) {
-
 		Endereco endereco = enderecoDao.pesquisarPorId(paciente.getEndereco().getId());
+		int id = endereco.getId();
 
 		JFormattedTextField ftfCep = new JFormattedTextField(mascaraCep);
 		ftfCep.setText(endereco.getCep());
@@ -573,7 +576,7 @@ public class TabelaPaciente extends JFrame {
 			String cidade = tfCidade.getText();
 			int numero = Integer.parseInt(tfNumero.getText());
 
-			endereco = new Endereco(cep, rua, bairro, uf, cidade, numero);
+			endereco = new Endereco(id, cep, rua, bairro, uf, cidade, numero);
 			enderecoDao.alterarEndereco(endereco);
 
 			atualizarTabela();
@@ -582,43 +585,38 @@ public class TabelaPaciente extends JFrame {
 	}
 
 	public void excluirPaciente(Paciente paciente) {
-//		Essa função não exclui realmente o paciente, apenas o deixa oculto, alternando o boolean "deletado" para true
+		// Essa função não exclui realmente o paciente, apenas o deixa oculto,
+		// alternando o boolean "deletado" para true
 
 		int resultado = JOptionPane.showConfirmDialog(null,
 				"Você está prestes a deletar o paciente " + paciente.getNome(), "ALERTA", JOptionPane.YES_NO_OPTION,
 				JOptionPane.WARNING_MESSAGE);
 
 		if (resultado == JOptionPane.OK_OPTION) {
-			paciente.setDeletado(true);
-			pacienteDao.alterarPaciente(paciente);
-			
-			//Método abaixo se a pessoa criou algum paciente errado e quer excluir antes de inserir em alguma consulta
-			
-			boolean possuiConsulta = false;
-			consultas = consultaDao.listaDeConsultas();
-			
-			for (Consulta consulta : consultas) {
-				if (possuiConsulta = consulta.getPaciente().getId() == paciente.getId()) {
-					possuiConsulta = true;
-					JOptionPane.showMessageDialog(null,
-							"O paciente ainda possui consultas registradas no histórico do sistema e apenas ficará oculto", "Aviso", JOptionPane.DEFAULT_OPTION);
-					break;
-				} else {
-					possuiConsulta = false;
-					
-				}
-			}
-			
-			if (paciente.isDeletado() == true && possuiConsulta == false) {
+			// Puxa uma lista para conferir se possui consultas antes de deletar
+			if (pacienteDao.possuiConsulta(paciente.getId()) == true) {
+				JOptionPane.showMessageDialog(null,
+						"O paciente ainda possui consultas registradas no histórico do sistema e apenas ficará oculto",
+						"Aviso", JOptionPane.DEFAULT_OPTION);
+
+				paciente.setDeletado(true);
+				pacienteDao.alterarPaciente(paciente);
+
+			} else {
+				// Método abaixo se a pessoa criou algum paciente errado e quer excluir antes de
+				// inserir em alguma consulta
 				PacienteResponsavel pacienteResponsavel = new PacienteResponsavel();
 				pacienteResponsavel = pacienteResponsavelDao.pesquisarPorPacienteId(paciente.getId());
 
 				if (pacienteResponsavel.getResponsavel() != null) {
-					responsavelDao.deletarResponsavel(pacienteResponsavel.getResponsavel().getId()); //Exclui o responsável relacionado
-					pacienteResponsavelDao.deletarPacienteResponsavel(paciente.getId()); //Quebra a ligação da tabela do paciente e do responsável
+					
+					responsavelDao.deletarResponsavel(pacienteResponsavel.getResponsavel().getId());
+					pacienteResponsavelDao.deletarPacienteResponsavel(paciente.getId());
+
 				}
-				enderecoDao.deletarEndereco(paciente.getEndereco().getId()); //Exclui o endereço relacionado
-				pacienteDao.deletarPaciente(paciente.getId()); //Exclui o paciente
+				
+				enderecoDao.deletarEndereco(paciente.getEndereco().getId());
+				pacienteDao.deletarPaciente(paciente.getId());
 			}
 		}
 
@@ -636,18 +634,18 @@ public class TabelaPaciente extends JFrame {
 		for (Paciente paciente : pacientes) {
 			if (paciente.isDeletado() != true) {
 				mapaPacientes.put(linha, paciente.getId());
-				
+
 				String dataNasc = dataFormatar.format(paciente.getDataNasc());
-				
-				modelo.addRow(new Object[] { paciente.getNome(), dataNasc, paciente.getCpf(),
-						paciente.getEmail(), paciente.getTelefone() });
-				
+
+				modelo.addRow(new Object[] { paciente.getNome(), dataNasc, paciente.getCpf(), paciente.getEmail(),
+						paciente.getTelefone() });
+
 				linha++;
 			}
 		}
 
 	}
-	
+
 	public Object selecionarLinhaPorId(Paciente paciente) {
 		int linha = table.getSelectedRow();
 		if (linha != -1) {

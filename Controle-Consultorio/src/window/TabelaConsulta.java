@@ -96,6 +96,7 @@ public class TabelaConsulta extends JFrame {
 		panel.setLayout(null);
 
 		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setEnabled(false);
 		scrollPane.setBounds(10, 43, 655, 191);
 		panel.add(scrollPane);
 
@@ -103,6 +104,9 @@ public class TabelaConsulta extends JFrame {
 		table.setModel(new DefaultTableModel(new Object[][] {},
 				new String[] { "Data", "Hora", "Paciente", "Tratamento", "Descrição", "Comparecimento" }));
 		scrollPane.setViewportView(table);
+		
+		table.setDefaultEditor(Object.class, null);
+		table.getTableHeader().setReorderingAllowed(false);
 
 		atualizarTabela();
 
@@ -159,10 +163,6 @@ public class TabelaConsulta extends JFrame {
 		});
 		btnNewButton_3.setBounds(465, 261, 89, 23);
 		panel.add(btnNewButton_3);
-
-//		table.setDefaultEditor(Object.class, null);
-//
-//		table.getTableHeader().setReorderingAllowed(false);
 	}
 
 	public void excluirConsulta(Consulta consulta) {
@@ -264,7 +264,7 @@ public class TabelaConsulta extends JFrame {
 			}
 			consultaDao.alterarConsulta(consulta);
 		} else {
-			JOptionPane.showMessageDialog(null, "Não foi possível marcar/desmarcar comparecimento, pois há a diferença de 5 dias");
+			JOptionPane.showMessageDialog(null, "Não foi possível marcar/desmarcar comparecimento, pois há diferença de 5 dias");
 		}
 
 		atualizarTabela();

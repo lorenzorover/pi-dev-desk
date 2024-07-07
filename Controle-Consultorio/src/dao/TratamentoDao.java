@@ -121,6 +121,7 @@ public class TratamentoDao {
 			pst.setDouble(2, tratamento.getPreco());
 			pst.setString(3, tratamento.getDescricao());
 			pst.setBoolean(4, tratamento.isDeletado());
+			pst.setInt(5, tratamento.getId());
 
 			pst.executeUpdate();
 

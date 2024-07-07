@@ -76,8 +76,7 @@ public class ConsultaDao {
 
 	public List<Consulta> listaDeConsultas() {
 		
-		String sql = " SELECT * FROM consulta INNER JOIN paciente ON consulta.paciente_id = paciente.id "
-				+ "INNER JOIN tratamento ON consulta.tratamento_id = tratamento.id";
+		String sql = " SELECT * FROM consulta";
 		
 		List<Consulta> lista = new ArrayList<>();
 
@@ -85,8 +84,6 @@ public class ConsultaDao {
 			Connection conn = getConexao();
 			PreparedStatement pst = conn.prepareStatement(sql);
 			ResultSet rs = pst.executeQuery();
-			PacienteDao pacienteDao = new PacienteDao();
-			TratamentoDao tratamentoDao = new TratamentoDao();
 
 			while (rs.next() == true) {
 				int id = rs.getInt(1);
@@ -101,7 +98,6 @@ public class ConsultaDao {
 				
 				Consulta consulta = new Consulta(id, dataHora, descricao, comparecimento, paciente, tratamento);
 				lista.add(consulta);
-
 			}
 			
 			rs.close();
@@ -111,13 +107,13 @@ public class ConsultaDao {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 		return lista;
 	}
 	
 	public Consulta pesquisarPorId(int id) {
 		Consulta consulta = new Consulta();
 		String query = "SELECT * FROM consulta WHERE id = ?";
+		
 		try {
 			Connection con = getConexao();
 			PreparedStatement pst = con.prepareStatement(query);
@@ -136,9 +132,11 @@ public class ConsultaDao {
 				
 				consulta = new Consulta(id, dataHora, descricao, comparecimento, paciente, tratamento);
 			}
+			
 			pst.close();
 			pst.close();
 			con.close();
+			
 		} catch (Exception e) {
 			System.out.println(e);
 		}
@@ -158,7 +156,7 @@ public class ConsultaDao {
 			pst.setBoolean(3, consulta.isComparecimento());
 			pst.setInt(4, consulta.getPaciente().getId());
 			pst.setInt(5, consulta.getTratamento().getId());
-//			pst.setInt(6, consulta.getProduto().getId());
+			pst.setInt(6, consulta.getId());
 
 			pst.executeUpdate();
 

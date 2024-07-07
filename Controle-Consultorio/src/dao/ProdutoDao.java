@@ -143,6 +143,7 @@ public class ProdutoDao {
 			pst.setString(3, produto.getDescricao());
 			pst.setInt(4, produto.getCompra().getId());
 			pst.setBoolean(5, produto.isDeletado());
+			pst.setInt(6, produto.getId());
 
 			pst.executeUpdate();
 

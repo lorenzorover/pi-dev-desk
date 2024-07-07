@@ -123,6 +123,7 @@ public class CompraDao {
 			pst.setDate(2, compra.getDataCompra());
 			pst.setDate(3, compra.getValidade());
 			pst.setInt(4, compra.getQuantidade());
+			pst.setInt(5, compra.getId());
 
 			pst.executeUpdate();
 

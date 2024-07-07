@@ -130,6 +130,7 @@ public class ResponsavelDao {
 			pst.setString(2, responsavel.getCpf());
 			pst.setString(3, responsavel.getTelefone());
 			pst.setString(4, responsavel.getEmail());
+			pst.setInt(5, responsavel.getId());
 
 			pst.executeUpdate();
 

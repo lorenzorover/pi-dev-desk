@@ -137,6 +137,7 @@ public class EnderecoDao {
 			pst.setString(4, endereco.getUf());
 			pst.setString(5, endereco.getCidade());
 			pst.setInt(6, endereco.getNumero());
+			pst.setInt(7, endereco.getId());
 
 			pst.executeUpdate();
 
