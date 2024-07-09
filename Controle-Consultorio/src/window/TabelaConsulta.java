@@ -254,7 +254,7 @@ public class TabelaConsulta extends JFrame {
 
 		long diferencaDias = ChronoUnit.DAYS.between(timeStampAgora.toInstant(), timeStampConsulta.toInstant());
 
-		if (diferencaDias < 5) {
+		//if (diferencaDias < 5) {
 			if (consulta.isComparecimento() == true) {
 				consulta.setComparecimento(false);
 			} else if (consulta.isComparecimento() == false) {
@@ -263,9 +263,9 @@ public class TabelaConsulta extends JFrame {
 				consulta.setComparecimento(false);
 			}
 			consultaDao.alterarConsulta(consulta);
-		} else {
-			JOptionPane.showMessageDialog(null, "Não foi possível marcar/desmarcar comparecimento, pois há diferença de 5 dias");
-		}
+//		} else {
+//			JOptionPane.showMessageDialog(null, "Não foi possível marcar/desmarcar comparecimento, pois há diferença de 5 dias");
+//		}
 
 		atualizarTabela();
 	}

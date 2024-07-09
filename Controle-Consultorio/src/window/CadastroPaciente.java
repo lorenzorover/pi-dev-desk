@@ -300,7 +300,7 @@ public class CadastroPaciente extends JFrame {
 		
 		tfEmailResponsavel = new JTextField();
 		tfEmailResponsavel.setColumns(10);
-		tfEmailResponsavel.setBounds(101, 145, 86, 20);
+		tfEmailResponsavel.setBounds(101, 145, 202, 20);
 		pResponsavel.add(tfEmailResponsavel);
 		
 		JLabel lblNewLabel_9 = new JLabel("CPF");

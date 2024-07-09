@@ -80,7 +80,9 @@ public class Principal {
 						telaListaPaciente.setVisible(true);
 						telaListaPaciente.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 					} else if (tratamento.isSelected()){
-						
+						TabelaTratamento telaListaTratamento = new TabelaTratamento();
+						telaListaTratamento.setVisible(true);
+						telaListaTratamento.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 						
 					} else {
 						JOptionPane.showMessageDialog(null, "Selecione uma opção");
