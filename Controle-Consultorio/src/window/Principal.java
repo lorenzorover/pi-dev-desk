@@ -55,13 +55,39 @@ public class Principal {
 		lblNewLabel.setBounds(172, 34, 84, 22);
 		frame.getContentPane().add(lblNewLabel);
 		
+		frame.setResizable(false); // Impede redimensionamento
+		
 		JButton btnNewButton = new JButton("Listar Informações");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
-				TabelaPaciente telaListaPaciente = new TabelaPaciente();
-				telaListaPaciente.setVisible(true);
-				telaListaPaciente.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+				JRadioButton paciente = new JRadioButton("Pacientes");
+				JRadioButton tratamento = new JRadioButton("Tratamentos");
+				
+				ButtonGroup grupo = new ButtonGroup();
+				grupo.add(paciente);
+				grupo.add(tratamento);
+
+				JPanel painel = new JPanel(new GridLayout(4, 2));
+				painel.add(paciente);
+				painel.add(tratamento);
+
+				int resultado = JOptionPane.showConfirmDialog(null, painel, "Mostrar informações", JOptionPane.OK_CANCEL_OPTION);
+				
+				if (resultado == JOptionPane.OK_OPTION) {
+					if (paciente.isSelected()) {
+						TabelaPaciente telaListaPaciente = new TabelaPaciente();
+						telaListaPaciente.setVisible(true);
+						telaListaPaciente.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+					} else if (tratamento.isSelected()){
+						
+						
+					} else {
+						JOptionPane.showMessageDialog(null, "Selecione uma opção");
+					}
+				}
+				
+				
 			}
 		});
 		btnNewButton.setBounds(10, 142, 121, 23);
@@ -99,8 +125,6 @@ public class Principal {
 		btnNewButton_3.setBounds(10, 178, 79, 37);
 		frame.getContentPane().add(btnNewButton_3);
 	}
-	
-	
 	
 	public void opcoesDeCadastro() {
 		

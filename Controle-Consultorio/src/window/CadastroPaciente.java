@@ -69,6 +69,7 @@ public class CadastroPaciente extends JFrame {
 				try {
 					CadastroPaciente frame = new CadastroPaciente();
 					frame.setVisible(true);
+					frame.setResizable(false); // Impede redimensionamento
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

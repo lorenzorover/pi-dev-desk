@@ -37,6 +37,7 @@ public class CadastroTratamento extends JFrame {
 				try {
 					CadastroTratamento frame = new CadastroTratamento();
 					frame.setVisible(true);
+					frame.setResizable(false); // Impede redimensionamento
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

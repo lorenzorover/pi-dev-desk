@@ -46,7 +46,6 @@ public class CadastroConsulta extends JFrame {
 	private TratamentoDao tratamentoDao = new TratamentoDao();
 	private ConsultaDao consultaDao = new ConsultaDao();
 	
-
 	/**
 	 * Launch the application.
 	 */
@@ -56,6 +55,7 @@ public class CadastroConsulta extends JFrame {
 				try {
 					CadastroConsulta frame = new CadastroConsulta();
 					frame.setVisible(true);
+					frame.setResizable(false); // Impede redimensionamento
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

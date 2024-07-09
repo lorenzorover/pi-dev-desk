@@ -5,12 +5,16 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+import entidades.Consulta;
+import entidades.Paciente;
 import entidades.Tratamento;
 
 public class TratamentoDao {
+	
 	public Connection getConexao() throws ClassNotFoundException {
 
 		String driver = "com.mysql.cj.jdbc.Driver";
@@ -53,6 +57,50 @@ public class TratamentoDao {
 			e.printStackTrace();
 		}
 
+	}
+	
+	public boolean possuiConsulta(int tratamentoId) {
+		TratamentoDao tratamentoDao = new TratamentoDao();
+		PacienteDao pacienteDao = new PacienteDao();
+		
+		List<Consulta> lista = new ArrayList<>();
+		
+		String query = "SELECT * FROM consulta WHERE tratamento_id = ?";
+
+		try {
+			Connection con = getConexao();
+			PreparedStatement pst = con.prepareStatement(query);
+			pst.setInt(1, tratamentoId);
+			ResultSet rs = pst.executeQuery();
+
+			while (rs.next() == true) {
+				int id = rs.getInt(1);
+				Timestamp dataHora = rs.getTimestamp(2);
+				String descricao = rs.getString(3);
+				boolean comparecimento = rs.getBoolean(4);
+				int pacienteId = rs.getInt(5);
+				tratamentoId = rs.getInt(6);
+
+				Paciente paciente = pacienteDao.pesquisarPorId(pacienteId);
+				Tratamento tratamento = tratamentoDao.pesquisarPorId(tratamentoId);
+
+				Consulta consulta = new Consulta(id, dataHora, descricao, comparecimento, paciente, tratamento);
+				lista.add(consulta);
+			}
+
+			pst.close();
+			pst.close();
+			con.close();
+
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		
+		if (lista.isEmpty() == false) {
+			return true;
+		}
+
+		return false;
 	}
 
 	public List<Tratamento> listaDeTratamentos() {

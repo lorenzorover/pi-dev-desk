@@ -19,7 +19,7 @@ import entidades.Tratamento;
 public class PacienteDao {
 
 	private EnderecoDao enderecoDao = new EnderecoDao();
-	private TratamentoDao tratamentoDao = new TratamentoDao();
+	
 
 	public Connection getConexao() throws ClassNotFoundException {
 
@@ -79,6 +79,7 @@ public class PacienteDao {
 
 	public boolean possuiConsulta(int pacienteId) {
 		PacienteDao pacienteDao = new PacienteDao();
+		TratamentoDao tratamentoDao = new TratamentoDao();
 		List<Consulta> lista = new ArrayList<>();
 		
 		String query = "SELECT * FROM consulta WHERE paciente_id = ?";

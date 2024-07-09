@@ -78,6 +78,7 @@ public class TabelaPaciente extends JFrame {
 				try {
 					TabelaPaciente frame = new TabelaPaciente();
 					frame.setVisible(true);
+					frame.setResizable(false); // Impede redimensionamento
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

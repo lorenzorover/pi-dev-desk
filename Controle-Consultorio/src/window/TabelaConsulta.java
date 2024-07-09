@@ -45,7 +45,6 @@ public class TabelaConsulta extends JFrame {
 	private ConsultaDao consultaDao = new ConsultaDao();
 	private PacienteDao pacienteDao = new PacienteDao();
 	private TratamentoDao tratamentoDao = new TratamentoDao();
-	
 
 	private SimpleDateFormat formatarData = new SimpleDateFormat("dd/MM/yyyy");
 	private SimpleDateFormat formatarHoraSemSeg = new SimpleDateFormat("HH:mm");
@@ -59,6 +58,7 @@ public class TabelaConsulta extends JFrame {
 				try {
 					TabelaConsulta frame = new TabelaConsulta();
 					frame.setVisible(true);
+					frame.setResizable(false); // Impede redimensionamento
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
