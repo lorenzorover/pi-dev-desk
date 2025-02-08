@@ -1,4 +1,4 @@
-# PI - Projeto Integrador Senac
+# PI - Projeto Integrador Desktop Senac
 <br>
 
 ## Controle de Consultório
