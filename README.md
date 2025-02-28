@@ -3,6 +3,7 @@
 ## Controle de Consultório
 
 A proposta do projeto é aumentar a agilidade e funcionalidade na organização e consulta de dados importantes pelo usuário.<br>
+Foi utilizado o sistema DAO (Data Access Object) para comunicação entre o banco de dados e a API.<br>
 
 Um mês e meio de desenvolvimento (junho/julho de 2024).
 <br>
